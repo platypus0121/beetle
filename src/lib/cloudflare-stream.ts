@@ -1,8 +1,9 @@
 import "server-only";
-import { createSign } from "node:crypto";
+import { createHmac, createSign, timingSafeEqual } from "node:crypto";
 
 // Cloudflare Stream 串接。金鑰只存在伺服器環境變數。
-const API = "https://api.cloudflare.com/client/v4";
+// 測試時可用 CLOUDFLARE_API_BASE 指向模擬伺服器
+const API = process.env.CLOUDFLARE_API_BASE ?? "https://api.cloudflare.com/client/v4";
 
 function creds() {
   const account = process.env.CLOUDFLARE_ACCOUNT_ID;
@@ -40,6 +41,32 @@ export async function getVideo(uid: string) {
     result?: { uid: string; duration: number; size: number; readyToStream: boolean; status?: { state: string }; input?: { width: number; height: number } };
   };
   return json.result ?? null;
+}
+
+// 把影片改成需簽名網址才能觀看（開箱影片的第二道保險）
+export async function requireSignedUrls(uid: string) {
+  const c = creds();
+  if (!c) return false;
+  const res = await fetch(`${API}/accounts/${c.account}/stream/${uid}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${c.token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, requireSignedURLs: true }),
+  });
+  return res.ok;
+}
+
+// 驗證 Cloudflare Stream webhook 簽章。
+// 標頭格式：Webhook-Signature: time=<unix 秒>,sig1=<hex>；簽章 = HMAC-SHA256(secret, `${time}.${原始 body}`)
+export function verifyWebhook(rawBody: string, header: string | null, secret: string, toleranceSec = 300): boolean {
+  if (!header) return false;
+  const parts = Object.fromEntries(header.split(",").map((kv) => kv.trim().split("=") as [string, string]));
+  const time = Number(parts.time);
+  const sig = parts.sig1;
+  if (!time || !sig || !/^[0-9a-f]{64}$/i.test(sig)) return false;
+  if (Math.abs(Date.now() / 1000 - time) > toleranceSec) return false;
+  const expected = createHmac("sha256", secret).update(`${parts.time}.${rawBody}`).digest();
+  const given = Buffer.from(sig, "hex");
+  return given.length === expected.length && timingSafeEqual(given, expected);
 }
 
 export async function deleteVideo(uid: string) {
