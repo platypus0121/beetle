@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test:db": "supabase/tests/run.sh && supabase/tests/concurrency.sh",
+    "test:e2e": "for t in posts market social breeding admin; do node e2e/$t.mjs || exit 1; done",
+    "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

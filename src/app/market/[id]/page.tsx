@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 import { mediaFor } from "@/lib/queries";
 import { LISTING_STATUS, LIVE_STAGES, SEXES, SHIPPING, STAGES } from "@/lib/constants";
 import { formatDate, price, timeAgo } from "@/lib/format";
-import { ConfirmForm } from "@/components/ConfirmForm";
 import { Gallery } from "@/components/Gallery";
 import { ReportButton } from "@/components/ReportButton";
 import { RichText } from "@/components/RichText";

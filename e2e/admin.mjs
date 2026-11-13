@@ -56,7 +56,7 @@ try {
   await spam.page.getByRole("button", { name: "發布" }).click();
   await see(spam.page, "沒有權限執行這個操作");
   step("版主停權後，該帳號無法再發文");
-  const r3 = await mod.page.goto(`${BASE}/admin/users?id=${mod.id}`);
+  await mod.page.goto(`${BASE}/admin/users?id=${mod.id}`);
   if (await mod.page.getByRole("button", { name: "變更角色" }).count()) throw new Error("版主不應看到角色設定");
   step("版主看不到指派角色的功能（僅管理員）");
 
