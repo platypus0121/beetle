@@ -82,7 +82,7 @@ export function CommentItem({
           <Link href={c.author ? `/u/${c.author.id}` : "#"} className="font-medium hover:underline">
             {c.author?.username ?? "已刪除的會員"}
           </Link>
-          <time className="text-xs text-faint" dateTime={c.created_at}>
+          <time className="text-xs text-faint" dateTime={c.created_at} suppressHydrationWarning>
             {timeAgo(c.created_at)}
             {c.edited_at && "（已編輯）"}
           </time>

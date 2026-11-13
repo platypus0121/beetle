@@ -62,7 +62,9 @@ export function step(msg) {
 }
 
 export function cleanup() {
-  sql(`delete from public.orders where buyer_id in (select id from auth.users where email like '%@e2e.local') or seller_id in (select id from auth.users where email like '%@e2e.local');
+  // 測試資料清理：時間軸有防刪保護，僅在本機測試以 replica 模式繞過
+  sql(`set session_replication_role = replica; delete from public.order_events where order_id in (select id from public.orders where buyer_id in (select id from auth.users where email like '%@e2e.local')); delete from public.credit_events where user_id in (select id from auth.users where email like '%@e2e.local'); set session_replication_role = origin;
+       delete from public.orders where buyer_id in (select id from auth.users where email like '%@e2e.local') or seller_id in (select id from auth.users where email like '%@e2e.local');
        delete from public.listings where seller_id in (select id from auth.users where email like '%@e2e.local');
        delete from auth.users where email like '%@e2e.local'`);
 }

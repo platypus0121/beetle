@@ -7,22 +7,22 @@ export function timeAgo(iso: string): string {
   return formatDate(iso);
 }
 
-const TZ = "Asia/Taipei";
+// 一律以台灣時間（UTC+8，無日光節約）顯示。
+// 不使用 Intl：伺服器與瀏覽器的 Intl 輸出可能有細微差異，會造成 hydration 不一致。
+function taipei(iso: string) {
+  const d = new Date(new Date(iso).getTime() + 8 * 3600_000);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return { y: d.getUTCFullYear(), m: p(d.getUTCMonth() + 1), d: p(d.getUTCDate()), h: p(d.getUTCHours()), min: p(d.getUTCMinutes()) };
+}
 export function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("zh-TW", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(
-    new Date(iso),
-  );
+  // 純日期（YYYY-MM-DD）不做時區換算
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso.replaceAll("-", "/");
+  const t = taipei(iso);
+  return `${t.y}/${t.m}/${t.d}`;
 }
 export function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("zh-TW", {
-    timeZone: TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date(iso));
+  const t = taipei(iso);
+  return `${t.y}/${t.m}/${t.d} ${t.h}:${t.min}`;
 }
 export function price(n: number): string {
   return `NT$${n.toLocaleString("en-US")}`;
