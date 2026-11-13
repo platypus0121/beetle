@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { SITE_NAME } from "@/lib/constants";
@@ -22,7 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <div className="mx-auto max-w-sm pt-6">
       <h1 className="page-title mb-1">登入 {SITE_NAME}</h1>
       <p className="mb-6 text-sm text-sub">登入後可以發文、留言、交易與記錄飼育。</p>
-      <LoginForm next={next} providers={providers} initialError={sp.error ? "登入失敗，請再試一次" : undefined} />
+      <LoginForm nonce={(await headers()).get("x-nonce") ?? undefined} turnstileKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || undefined} next={next} providers={providers} initialError={sp.error ? "登入失敗，請再試一次" : undefined} />
     </div>
   );
 }

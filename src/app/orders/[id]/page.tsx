@@ -158,9 +158,11 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 {acctNew.data && <p className="notice notice-danger text-[13px]">這個收款帳戶和賣家過去完成交易時使用的不同，付款前請先在下方留言向賣家確認。</p>}
                 {sellerRisky && (
                   <p className="notice notice-warn text-[13px]">
-                    提醒：賣家{otherAge < 14 ? `註冊僅 ${otherAge} 天` : ""}
-                    {o.seller.completed_orders === 0 ? "、尚無完成的交易" : ""}
-                    {o.seller.credit_score < 90 ? `、信用分 ${o.seller.credit_score}` : ""}。金額較高時建議面交或分批交易。
+                    提醒：賣家
+                    {[otherAge < 14 ? `註冊僅 ${otherAge} 天` : null, o.seller.completed_orders === 0 ? "尚無完成的交易" : null, o.seller.credit_score < 90 ? `信用分 ${o.seller.credit_score}` : null]
+                      .filter(Boolean)
+                      .join("、")}
+                    。金額較高時建議面交或分批交易。
                   </p>
                 )}
                 <ReportPaymentForm orderId={o.id} amount={o.amount} method={info.method} />

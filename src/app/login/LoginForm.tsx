@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
 import { requestPasswordReset, signIn, signUp } from "./actions";
 
@@ -11,7 +12,7 @@ const PROVIDER_LABEL: Record<string, string> = {
   "custom:line": "LINE",
 };
 
-export function LoginForm({ next, providers, initialError }: { next: string; providers: string[]; initialError?: string }) {
+export function LoginForm({ next, providers, initialError, turnstileKey, nonce }: { next: string; providers: string[]; initialError?: string; turnstileKey?: string; nonce?: string }) {
   const [mode, setMode] = useState<"in" | "up" | "reset">("in");
   const [inState, inAction, inPending] = useActionState(signIn, null);
   const [upState, upAction, upPending] = useActionState(signUp, null);
@@ -103,6 +104,13 @@ export function LoginForm({ next, providers, initialError }: { next: string; pro
               </Link>
             </span>
           </label>
+        )}
+        {/* 驗證碼：有設定 site key 才顯示；token 會以 cf-turnstile-response 欄位隨表單送出，由 Supabase Auth 驗證 */}
+        {turnstileKey && mode !== "reset" && (
+          <>
+            <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" nonce={nonce} />
+            <div className="cf-turnstile" data-sitekey={turnstileKey} data-language="zh-TW" />
+          </>
         )}
         <button className="btn btn-primary w-full" disabled={inPending || upPending || rsPending}>
           {mode === "in" ? "登入" : mode === "up" ? "註冊" : "寄送重設密碼信"}
