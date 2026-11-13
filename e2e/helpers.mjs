@@ -23,7 +23,7 @@ export async function newUser(browser, name) {
   const page = await ctx.newPage();
   page.on("pageerror", (e) => console.log(`  [${name}] pageerror:`, e.message));
   page.on("console", (m) => {
-    if (m.type() === "error" && !/favicon|Failed to load resource|_next\/hmr/.test(m.text())) console.log(`  [${name}] console:`, m.text().slice(0, 300));
+    if (m.type() === "error" && !/favicon|Failed to load resource|_next\/hmr/.test(m.text())) console.log(`  [${name}] console:`, m.text().slice(0, Number(process.env.LOGLEN ?? 300)));
   });
   const email = `${name}-${Date.now()}@e2e.local`;
   await page.goto(`${BASE}/login`);
