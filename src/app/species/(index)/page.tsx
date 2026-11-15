@@ -5,8 +5,9 @@ import { FAMILY_GROUPS } from "@/lib/constants";
 import { Empty, PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "物種",
-  description: "鍬形蟲、兜蟲、金龜物種列表：俗名、學名、日文名對照，以及各物種的飼育文章與交易。",
+  title: "甲蟲物種圖鑑（鍬形蟲・兜蟲・金龜）",
+  description: "鍬形蟲、兜蟲、獨角仙、金龜物種列表：中文俗名、學名、日文名對照，標示保育類，以及各物種的飼育文章與交易。",
+  alternates: { canonical: "/species" },
 };
 
 export default async function SpeciesPage({ searchParams }: { searchParams: Promise<{ q?: string; g?: string }> }) {
@@ -27,7 +28,7 @@ export default async function SpeciesPage({ searchParams }: { searchParams: Prom
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
-        title="物種"
+        title="甲蟲物種"
         sub="文章、交易與飼育紀錄都綁定物種，從這裡可以找到同一種蟲的所有內容。"
         action={
           <Link href="/species/submit" className="btn btn-sm">

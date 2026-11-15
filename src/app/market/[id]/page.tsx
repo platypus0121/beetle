@@ -16,6 +16,7 @@ import { setListingStatus } from "../actions";
 import { AuctionPanel, OrderPanel, type AuctionState, type BidRow } from "./BuyPanels";
 import { DeleteListing } from "./DeleteListing";
 import { StickyBuyBar } from "./StickyBuyBar";
+import { abs, breadcrumb, JsonLd } from "@/lib/seo";
 import { endsIn } from "@/components/ListingCard";
 
 async function load(id: number) {
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!l || l.status === "hidden") return { title: "商品", robots: { index: false } };
   const cover = (await mediaFor("listing", [l.id])).get(l.id)?.find((m) => m.kind === "image")?.url;
   const desc = `${price(l.price)}・${STAGES[l.stage as keyof typeof STAGES]}${l.scientific_name ? `・${l.scientific_name}` : ""}`;
-  return { title: l.title, description: desc, alternates: { canonical: `/market/${l.id}` }, openGraph: { title: l.title, description: desc, images: cover ? [cover] : undefined } };
+  return { title: l.title, description: desc, alternates: { canonical: `/market/${l.id}` }, openGraph: { title: l.title, description: desc, images: [cover ?? "/opengraph-image.png"] }, twitter: { card: "summary_large_image", images: [cover ?? "/twitter-image.png"] } };
 }
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
@@ -109,8 +110,30 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const barPrice = auction ? price(auction.current_price) : price(l.price);
   const barSub = auction ? `${auction.bid_count} 次出價・${endsIn(auction.ends_at)}` : l.city ? `${l.city}・${l.shipping_methods.length} 種寄送方式` : undefined;
 
+  const images = (media.get(listingId) ?? []).filter((m) => m.kind === "image" && m.url).map((m) => m.url!);
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: l.title,
+    sku: String(l.id),
+    description: (l.description || `${STAGES[l.stage as keyof typeof STAGES]}${l.scientific_name ? ` ${l.scientific_name}` : ""}`).slice(0, 500),
+    image: images.length ? images : undefined,
+    category: l.species?.common_name ?? STAGES[l.stage as keyof typeof STAGES],
+    offers: {
+      "@type": "Offer",
+      url: abs(`/market/${l.id}`),
+      priceCurrency: "TWD",
+      price: auction ? auction.current_price : l.price,
+      availability: l.status === "active" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Person", name: l.seller.username },
+    },
+  };
+  const crumbs = breadcrumb([["甲蟲買賣", "/market"], [l.title, `/market/${l.id}`]]);
+
   return (
     <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-[1fr_340px]">
+      {l.status !== "hidden" && <JsonLd data={[productLd, crumbs]} />}
       <div className="min-w-0">
         <Gallery media={media.get(listingId) ?? []} />
         <div className="mt-4 flex flex-wrap items-center gap-1.5">

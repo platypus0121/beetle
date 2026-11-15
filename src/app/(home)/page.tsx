@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -5,6 +6,27 @@ import { coverOf, mediaFor, POST_SELECT } from "@/lib/queries";
 import { POST_CATEGORIES, SITE_DESC } from "@/lib/constants";
 import { PostCard, type PostCardData } from "@/components/PostCard";
 import { Empty, Pager, Tabs } from "@/components/ui";
+import { JsonLd, organization, SITE_URL } from "@/lib/seo";
+import { SITE_NAME } from "@/lib/constants";
+
+// 分頁、分類等網址參數都指回首頁本身，避免重複內容
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    organization,
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: SITE_NAME,
+      inLanguage: "zh-TW",
+      publisher: { "@id": `${SITE_URL}/#org` },
+      potentialAction: { "@type": "SearchAction", target: `${SITE_URL}/search?q={search_term_string}`, "query-input": "required name=search_term_string" },
+    },
+  ],
+};
 
 const PAGE = 20;
 
@@ -57,9 +79,11 @@ export default async function HomePage({
 
   return (
     <div className="mx-auto max-w-2xl">
+      <JsonLd data={siteJsonLd} />
+      {session && <h1 className="sr-only">{SITE_NAME}：鍬形蟲、兜蟲、獨角仙飼育交流與買賣</h1>}
       {!session && (
         <div className="mb-5 rounded-xl bg-accent-wash px-4 py-4">
-          <p className="font-semibold text-accent">鍬形蟲・兜蟲・金龜的同好社群</p>
+          <h1 className="font-semibold text-accent">台灣鍬形蟲・兜蟲・獨角仙同好社群</h1>
           <p className="mt-1 text-sm text-sub">{SITE_DESC}</p>
           <Link href="/login" className="btn btn-primary btn-sm mt-3">
             加入

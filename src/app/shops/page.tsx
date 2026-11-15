@@ -7,11 +7,25 @@ import { formatDate } from "@/lib/format";
 import { ReportButton } from "@/components/ReportButton";
 import { Empty, PageHeader } from "@/components/ui";
 import { OpenBadge } from "./OpenBadge";
+import { breadcrumb, JsonLd, openingHoursSpec } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "全台甲蟲店",
-  description: "全台灣鍬形蟲、兜蟲、金龜專賣店名錄：地址、電話、營業時間與公休日，依縣市查詢。",
-};
+// 每個縣市各自一頁（/shops?city=臺南市），標題與描述帶縣市名，搜尋「台南 甲蟲店」比較容易找到
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ city?: string }> }): Promise<Metadata> {
+  const c = (await searchParams).city;
+  const city = c && CITIES.includes(c) ? c : null;
+  if (!city)
+    return {
+      title: "全台甲蟲店名錄（鍬形蟲・兜蟲・獨角仙專賣店）",
+      description: "全台灣甲蟲專賣店名錄：鍬形蟲、兜蟲、獨角仙實體店的地址、電話、營業時間與公休日，依縣市查詢。",
+      alternates: { canonical: "/shops" },
+    };
+  const alt = city.replace("臺", "台");
+  return {
+    title: `${city}甲蟲店（${alt}鍬形蟲・兜蟲・獨角仙專賣店）`,
+    description: `${city}（${alt}）的甲蟲專賣店：地址、電話、營業時間與公休日，出發前先查。`,
+    alternates: { canonical: `/shops?city=${encodeURIComponent(city)}` },
+  };
+}
 
 const DAYS = [
   ["mon", "一"],
@@ -53,7 +67,29 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader title="全台甲蟲店" sub="只列出查得到近期營業跡象的實體店。" />
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: `${city ?? "全台"}甲蟲店`,
+            itemListElement: list.map((s, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "PetStore",
+                name: s.name,
+                telephone: s.phone ?? undefined,
+                url: s.website ?? s.instagram ?? s.facebook ?? undefined,
+                address: { "@type": "PostalAddress", addressRegion: s.city, addressLocality: s.district ?? undefined, streetAddress: s.address ?? undefined, addressCountry: "TW" },
+                openingHoursSpecification: openingHoursSpec(s.opening_hours as Hours | null),
+              },
+            })),
+          },
+          breadcrumb(city ? [["全台甲蟲店", "/shops"], [`${city}甲蟲店`, `/shops?city=${encodeURIComponent(city)}`]] : [["全台甲蟲店", "/shops"]]),
+        ]}
+      />
+      <PageHeader title={city ? `${city}甲蟲店` : "全台甲蟲店"} sub="只列出查得到近期營業跡象的實體店。" />
       <p className="notice mb-4 text-[13px]">
         營業時間以店家公告為準，出發前建議先打電話或看店家社群確認。{latest && `資料最近查證日期：${formatDate(latest)}。`}
         發現資訊有誤、店家已歇業，或有店家沒被收錄，請按該店的「回報」讓我們更新。

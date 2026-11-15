@@ -9,7 +9,18 @@ import { RichText } from "@/components/RichText";
 import { UserLink } from "@/components/ui";
 import { closeWanted } from "../../actions";
 
-export const metadata: Metadata = { title: "徵求" };
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: w } = await supabase.from("wanted_listings").select("id, title, description, status").eq("id", Number(id) || 0).maybeSingle();
+  if (!w) return { title: "徵求", robots: { index: false } };
+  return {
+    title: `徵求：${w.title}`,
+    description: (w.description ?? `徵求 ${w.title}`).slice(0, 120),
+    alternates: { canonical: `/market/wanted/${w.id}` },
+    robots: w.status === "open" ? undefined : { index: false },
+  };
+}
 
 export default async function WantedPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { breadcrumb, JsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
@@ -21,8 +22,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const s = await load(Number(id) || 0);
   if (!s) return { title: "物種" };
   return {
-    title: `${s.common_name} ${s.scientific_name}`,
-    description: `${s.common_name}（${s.scientific_name}${s.japanese_name ? `、${s.japanese_name}` : ""}）的飼育文章、交易與飼育紀錄。`,
+    title: `${s.common_name}（${s.scientific_name}）飼養與買賣`,
+    description: `${s.common_name}（學名 ${s.scientific_name}${s.japanese_name ? `，日文 ${s.japanese_name}` : ""}）${s.is_protected ? "為保育類，禁止買賣。" : "的飼養心得、"}飼育文章、交易與飼育紀錄。`,
     alternates: { canonical: `/species/${s.id}` },
   };
 }
@@ -45,6 +46,7 @@ export default async function SpeciesDetailPage({ params }: { params: Promise<{ 
   const [pm, lm] = await Promise.all([mediaFor("post", pList.map((p) => p.id)), mediaFor("listing", lList.map((l) => l.id))]);
   return (
     <div className="mx-auto max-w-3xl">
+      <JsonLd data={breadcrumb([["甲蟲物種", "/species"], [FAMILY_GROUPS[s.family_group as keyof typeof FAMILY_GROUPS], `/species?g=${s.family_group}`], [s.common_name, `/species/${s.id}`]])} />
       <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-sub">
         <Link href="/species" className="hover:underline">
           物種

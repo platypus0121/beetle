@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { abs, breadcrumb, JsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSession, isBanned, isMod } from "@/lib/auth";
@@ -34,7 +35,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     title: post.title,
     description: post.body.slice(0, 120),
     alternates: { canonical: `/posts/${post.id}` },
-    openGraph: { title: post.title, description: post.body.slice(0, 120), type: "article", images: cover ? [cover] : undefined },
+    // 沒有照片時用站方預設分享圖，否則分享到 FB／LINE 會沒有圖
+    openGraph: { title: post.title, description: post.body.slice(0, 120), type: "article", images: [cover ?? "/opengraph-image.png"] },
+    twitter: { card: "summary_large_image", images: [cover ?? "/twitter-image.png"] },
   };
 }
 
@@ -84,13 +87,19 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     headline: post.title,
     text: post.body.slice(0, 500),
     datePublished: post.created_at,
-    author: { "@type": "Person", name: post.author?.username },
+    author: { "@type": "Person", name: post.author?.username, url: post.author ? abs(`/u/${post.author.id}`) : undefined },
+    url: abs(`/posts/${post.id}`),
+    mainEntityOfPage: abs(`/posts/${post.id}`),
+    dateModified: post.updated_at,
+    inLanguage: "zh-TW",
+    image: (postMedia.get(postId) ?? []).filter((m) => m.kind === "image" && m.url).map((m) => m.url!).slice(0, 5),
+    ...(post.species ? { about: { "@type": "Thing", name: `${post.species.common_name} ${post.species.scientific_name}` } } : {}),
     interactionStatistic: { "@type": "InteractionCounter", interactionType: "https://schema.org/CommentAction", userInteractionCount: post.comment_count },
   };
 
   return (
     <article className="mx-auto max-w-2xl">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      {post.status === "published" && <JsonLd data={[jsonLd, breadcrumb([[POST_CATEGORIES[post.category as keyof typeof POST_CATEGORIES] ?? "討論", `/?cat=${post.category}`], [post.title, `/posts/${post.id}`]])]} />}
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <Link href={`/?cat=${post.category}`} className="chip chip-accent">
           {POST_CATEGORIES[post.category as keyof typeof POST_CATEGORIES]}

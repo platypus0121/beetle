@@ -9,10 +9,18 @@ import { ListingCard, type ListingCardData } from "@/components/ListingCard";
 import { Empty, PageHeader, Pager, Tabs } from "@/components/ui";
 import { AutoSubmitSelect, FilterSheet } from "./FilterSheet";
 
-export const metadata: Metadata = {
-  title: "交易",
-  description: "鍬形蟲、兜蟲、金龜的活體、標本與飼育用品交易：直購、拍賣競標與徵求。",
-};
+// 直購／拍賣／徵求各自一頁；其他篩選條件（關鍵字、價格、排序、分頁）一律指回該頁，避免重複內容
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ type?: string }> }): Promise<Metadata> {
+  const t = (await searchParams).type;
+  const pages: Record<string, [string, string]> = {
+    all: ["甲蟲買賣（鍬形蟲・兜蟲・獨角仙）", "鍬形蟲、兜蟲、獨角仙、金龜的活體、幼蟲、標本與飼育用品買賣：直購、拍賣競標與徵求，保育類禁售。"],
+    fixed: ["甲蟲直購", "鍬形蟲、兜蟲、獨角仙的活體、幼蟲、標本與飼育用品直購。"],
+    auction: ["甲蟲拍賣・競標", "鍬形蟲、兜蟲、獨角仙拍賣競標：防狙擊延長、自動出價，交易全程記錄在站內交易單。"],
+    wanted: ["甲蟲徵求", "想找特定的鍬形蟲、兜蟲或飼育用品？在這裡刊登徵求，讓賣家來找你。"],
+  };
+  const key = t && t in pages ? t : "all";
+  return { title: pages[key][0], description: pages[key][1], alternates: { canonical: key === "all" ? "/market" : `/market?type=${key}` } };
+}
 
 const PAGE = 24;
 type SP = { type?: string; q?: string; group?: string; species?: string; stage?: string; sex?: string; min?: string; max?: string; city?: string; ship?: string; sort?: string; page?: string };
@@ -55,7 +63,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
   const header = (
     <>
       <PageHeader
-        title="交易"
+        title="甲蟲交易"
         action={
           <Link href={type === "wanted" ? "/market/wanted/new" : "/market/new"} className="btn btn-primary btn-sm">
             {type === "wanted" ? "刊登徵求" : "上架"}
