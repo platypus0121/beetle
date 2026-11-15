@@ -16,14 +16,14 @@ export async function Nav() {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4 max-[359px]:gap-2">
           <BackButton />
-          <Link href="/" className="flex items-center gap-2 text-[17px] font-semibold tracking-tight text-ink">
-            <span aria-hidden className="inline-block size-2.5 rounded-full bg-accent" />
-            {SITE_NAME}
+          <Link href="/" className="flex min-w-0 items-center gap-2 text-[17px] font-semibold tracking-tight text-ink max-[359px]:gap-1.5 max-[359px]:text-[15px]">
+            <span aria-hidden className="inline-block size-2.5 shrink-0 rounded-full bg-accent max-[359px]:hidden" />
+            <span className="truncate">{SITE_NAME}</span>
           </Link>
           <TopLinks />
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex shrink-0 items-center gap-1">
             <Link href="/search" aria-label="搜尋" className="btn btn-ghost btn-sm px-2">
               <Icon d="M21 21l-4.3-4.3M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" />
             </Link>

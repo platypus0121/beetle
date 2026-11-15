@@ -4,7 +4,7 @@ import { SITE_DESC, SITE_NAME } from "@/lib/constants";
 // PWA：可加到手機主畫面
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${SITE_NAME}｜鍬形蟲・兜蟲・金龜論壇`,
+    name: `${SITE_NAME}｜鍬形蟲・兜蟲・金龜`,
     short_name: SITE_NAME,
     description: SITE_DESC,
     start_url: "/",

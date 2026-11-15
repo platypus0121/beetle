@@ -9,7 +9,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: { default: `${SITE_NAME}｜鍬形蟲・兜蟲・金龜論壇`, template: `%s｜${SITE_NAME}` },
+  title: { default: `${SITE_NAME}｜鍬形蟲・兜蟲・金龜`, template: `%s｜${SITE_NAME}` },
   description: SITE_DESC,
   applicationName: SITE_NAME,
   openGraph: { siteName: SITE_NAME, locale: "zh_TW", type: "website" },

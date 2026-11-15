@@ -1,4 +1,4 @@
-export const SITE_NAME = "甲蟲圈";
+export const SITE_NAME = "台灣甲蟲論壇1.0";
 export const SITE_DESC = "鍬形蟲、兜蟲、金龜的飼育討論、紀錄與交易社群";
 
 export const FAMILY_GROUPS = { stag: "鍬形蟲", rhino: "兜蟲", scarab: "金龜" } as const;
