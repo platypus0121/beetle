@@ -95,3 +95,69 @@ a {
     @apply font-serif text-[0.95em] italic;
   }
 }
+
+/* ---- UX：骨架、進度條、提示、對話框、焦點 ---- */
+@layer components {
+  .skeleton {
+    @apply rounded-md bg-wash;
+    background-image: linear-gradient(90deg, transparent 0, rgb(255 255 255 / 0.65) 50%, transparent 100%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: skeleton-shimmer 1.3s ease-in-out infinite;
+  }
+  .press {
+    @apply transition-transform duration-100 active:scale-[0.985];
+  }
+  .sheet {
+    @apply m-0 mt-auto w-full max-w-none rounded-t-2xl border-0 bg-white p-0 text-ink shadow-2xl sm:m-auto sm:max-w-md sm:rounded-2xl;
+    max-height: min(88dvh, 720px);
+  }
+  .sheet::backdrop {
+    background: rgb(17 20 19 / 0.4);
+  }
+  .sheet[open] {
+    animation: sheet-up 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .sheet[open]::backdrop {
+    animation: fade-in 0.2s ease-out;
+  }
+  .spinner {
+    @apply inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-current border-r-transparent;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes toast-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.input:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

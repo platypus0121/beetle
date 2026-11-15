@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Nav } from "@/components/Nav";
+import { NavProgress } from "@/components/NavProgress";
+import { Toaster } from "@/components/Toaster";
 import { SITE_DESC, SITE_NAME } from "@/lib/constants";
 import "./globals.css";
 
@@ -25,6 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-Hant-TW">
       <body>
+        <Suspense>
+          <NavProgress />
+          <Toaster />
+        </Suspense>
         <Nav />
         <main className="mx-auto max-w-5xl px-4 pt-5 pb-24 sm:pb-12">{children}</main>
         <footer className="mx-auto hidden max-w-5xl flex-wrap gap-x-5 gap-y-1 border-t border-line px-4 py-6 text-xs text-sub sm:flex">

@@ -1,4 +1,5 @@
 "use server";
+import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -68,6 +69,7 @@ export async function resolveDispute(_: unknown, form: FormData): Promise<Action
   const { error } = await supabase.rpc("resolve_dispute", { p_order: order, p_outcome: s(form, "outcome"), p_fault: s(form, "fault"), p_note: note });
   if (error) return fail(dbError(error));
   revalidatePath("/admin/disputes");
+  await setFlash("裁決已送出");
   redirect("/admin/disputes");
 }
 

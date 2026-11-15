@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { toast } from "@/components/Toaster";
 import { createClient } from "@/lib/supabase/client";
 import { compressImage, extOf } from "@/lib/image-compress";
 import { CITIES, NOTIFICATION_TYPES } from "@/lib/constants";
@@ -10,6 +11,9 @@ import { changePassword, saveNotificationSettings, saveProfile } from "./actions
 
 export function ProfileForm({ p }: { p: { username: string; bio: string | null; city: string | null; avatar_path: string | null; dm_friends_only: boolean } }) {
   const [state, action] = useActionState(saveProfile, null);
+  useEffect(() => {
+    if (state?.ok) toast("個人資料已儲存");
+  }, [state]);
   const [avatar, setAvatar] = useState(p.avatar_path);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -38,7 +42,6 @@ export function ProfileForm({ p }: { p: { username: string; bio: string | null; 
   return (
     <form action={action} className="space-y-4">
       <FormError state={state} />
-      {state?.ok && <p className="notice">已儲存。</p>}
       <input type="hidden" name="avatar_path" value={avatar ?? ""} />
       <div className="flex items-center gap-3">
         {avatar ? (
@@ -97,10 +100,12 @@ async function squareCrop(file: File): Promise<Blob> {
 
 export function NotificationForm({ disabled }: { disabled: string[] }) {
   const [state, action] = useActionState(saveNotificationSettings, null);
+  useEffect(() => {
+    if (state?.ok) toast("通知設定已儲存");
+  }, [state]);
   return (
     <form action={action} className="space-y-2">
       <FormError state={state} />
-      {state?.ok && <p className="notice">已儲存。</p>}
       <div className="grid gap-x-6 sm:grid-cols-2">
         {Object.entries(NOTIFICATION_TYPES).map(([k, label]) => (
           <label key={k} className="flex min-h-10 items-center gap-2 text-sm">
@@ -116,10 +121,12 @@ export function NotificationForm({ disabled }: { disabled: string[] }) {
 
 export function PasswordForm() {
   const [state, action] = useActionState(changePassword, null);
+  useEffect(() => {
+    if (state?.ok) toast("密碼已更新");
+  }, [state]);
   return (
     <form action={action} className="space-y-4">
       <FormError state={state} />
-      {state?.ok && <p className="notice">密碼已更新。</p>}
       <div>
         <label className="label" htmlFor="password">
           新密碼

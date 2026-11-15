@@ -1,4 +1,5 @@
 "use server";
+import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -101,6 +102,7 @@ export async function saveListing(_: unknown, form: FormData): Promise<ActionRes
   const vid = await attachVideo(userId, v.video_upload_id, "listing", listingId);
   if (!vid.ok) return fail(vid.error);
   revalidatePath("/market");
+  await setFlash(editId ? "商品已更新" : "商品已上架");
   redirect(`/market/${listingId}`);
 }
 
@@ -121,6 +123,7 @@ export async function deleteListing(_: unknown, form: FormData): Promise<ActionR
   if (error) return fail(error.code === "23503" ? "已有交易紀錄的商品不能刪除，請改為下架" : dbError(error));
   if (data?.length) await removeMediaOf("listing", id);
   revalidatePath("/market");
+  await setFlash("商品已刪除");
   redirect("/market");
 }
 
@@ -134,6 +137,7 @@ export async function createOrder(_: unknown, form: FormData): Promise<ActionRes
     p_note: String(form.get("note") ?? ""),
   });
   if (error) return fail(dbError(error));
+  await setFlash("已送出購買需求，等賣家確認");
   redirect(`/orders/${data}`);
 }
 
@@ -156,6 +160,7 @@ export async function buyNow(_: unknown, form: FormData): Promise<ActionResult> 
   if (form.get("agreed") !== "on") return fail("請先閱讀並勾選交易注意事項");
   const { data, error } = await supabase.rpc("buy_now", { p_listing: Number(form.get("listing_id")) });
   if (error) return fail(dbError(error));
+  await setFlash("已直購得標，請依交易單付款");
   redirect(`/orders/${data}`);
 }
 
@@ -187,6 +192,7 @@ export async function saveWanted(_: unknown, form: FormData): Promise<ActionResu
     .single();
   if (error) return fail(dbError(error));
   revalidatePath("/market");
+  await setFlash("徵求已刊登");
   redirect(`/market/wanted/${data.id}`);
 }
 

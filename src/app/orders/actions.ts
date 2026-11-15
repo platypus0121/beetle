@@ -1,4 +1,5 @@
 "use server";
+import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -104,6 +105,7 @@ export async function openDispute(_: unknown, form: FormData): Promise<ActionRes
   });
   if (error) return fail(dbError(error));
   revalidatePath(`/orders/${orderId}`);
+  await setFlash("申訴已送出，版主會盡快處理");
   redirect(`/orders/${orderId}`);
 }
 
@@ -116,5 +118,6 @@ export async function submitReview(_: unknown, form: FormData): Promise<ActionRe
   const { error } = await supabase.rpc("submit_review", { p_order: orderId, p_rating: rating, p_body: String(form.get("body") ?? "").trim() });
   if (error) return fail(dbError(error));
   revalidatePath(`/orders/${orderId}`);
+  await setFlash("感謝你的評價");
   redirect(`/orders/${orderId}`);
 }

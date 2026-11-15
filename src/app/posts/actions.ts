@@ -1,4 +1,5 @@
 "use server";
+import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -56,6 +57,7 @@ export async function savePost(_: unknown, form: FormData): Promise<ActionResult
   const vid = await attachVideo(userId, v.video_upload_id, "post", postId);
   if (!vid.ok) return fail(vid.error);
   revalidatePath("/");
+  await setFlash(v.status === "draft" ? "草稿已儲存" : "已發布");
   redirect(`/posts/${postId}`);
 }
 
@@ -66,6 +68,7 @@ export async function deletePost(form: FormData) {
   const { data } = await supabase.from("posts").delete().eq("id", id).select("id");
   if (data?.length) await removeMediaOf("post", id);
   revalidatePath("/");
+  await setFlash("文章已刪除");
   redirect("/");
 }
 

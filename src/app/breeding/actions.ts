@@ -1,4 +1,5 @@
 "use server";
+import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -75,6 +76,7 @@ export async function saveSpecimen(_: unknown, form: FormData): Promise<ActionRe
   const img = await attachImages(userId, form.getAll("media_ids").map(Number).filter(Boolean), "specimen", id, Number(form.get("kept_count")) || 0);
   if (!img.ok) return fail(dbError({ code: "P0001", message: img.error }));
   revalidatePath("/breeding");
+  await setFlash(editId ? "已儲存" : "個體已建立");
   redirect(`/breeding/${id}`);
 }
 
@@ -85,6 +87,7 @@ export async function deleteSpecimen(form: FormData) {
   const { data } = await supabase.from("specimens").delete().eq("id", id).eq("owner_id", userId).select("id");
   if (data?.length) await removeMediaOf("specimen", id);
   revalidatePath("/breeding");
+  await setFlash("個體已刪除");
   redirect("/breeding");
 }
 

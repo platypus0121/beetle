@@ -1,9 +1,15 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useConfirm } from "./ConfirmDialog";
+import { toast } from "./Toaster";
 import { blockAction, friendAction } from "@/app/social/actions";
 
 export function FriendButton({ target, state: rel, requestId }: { target: string; state: "none" | "pending_out" | "pending_in" | "friends"; requestId?: number }) {
   const [res, action, pending] = useActionState(friendAction, null);
+  const [dialog, guard] = useConfirm();
+  useEffect(() => {
+    if (res?.ok) toast("已更新好友狀態");
+  }, [res]);
   const btn = (intent: string, label: string, cls = "btn btn-sm") => (
     <button name="intent" value={intent} className={cls} disabled={pending}>
       {label}
@@ -13,11 +19,12 @@ export function FriendButton({ target, state: rel, requestId }: { target: string
     <form
       action={action}
       className="inline-flex flex-wrap items-center gap-2"
-      onSubmit={(e) => {
+      onSubmit={guard((e) => {
         const intent = (e.nativeEvent as SubmitEvent).submitter?.getAttribute("value");
-        if (intent === "remove" && rel === "friends" && !confirm("確定解除好友？")) e.preventDefault();
-      }}
+        return intent === "remove" && rel === "friends" ? { message: "確定解除好友？", confirmLabel: "解除好友" } : null;
+      })}
     >
+      {dialog}
       <input type="hidden" name="target" value={target} />
       {requestId && <input type="hidden" name="id" value={requestId} />}
       {rel === "none" && btn("request", "＋ 加好友")}
@@ -36,13 +43,13 @@ export function FriendButton({ target, state: rel, requestId }: { target: string
 
 export function BlockButton({ target, blocked }: { target: string; blocked: boolean }) {
   const [res, action, pending] = useActionState(blockAction, null);
+  const [dialog, guard] = useConfirm();
+  useEffect(() => {
+    if (res?.ok) toast("已更新封鎖設定");
+  }, [res]);
   return (
-    <form
-      action={action}
-      onSubmit={(e) => {
-        if (!blocked && !confirm("封鎖後雙方無法私訊、加好友或交易，並會解除好友與追蹤。確定封鎖？")) e.preventDefault();
-      }}
-    >
+    <form action={action} onSubmit={guard(blocked ? null : { message: "封鎖後雙方無法私訊、加好友或交易，並會解除好友與追蹤。確定封鎖？", confirmLabel: "封鎖" })}>
+      {dialog}
       <input type="hidden" name="target" value={target} />
       <button name="intent" value={blocked ? "unblock" : "block"} className="text-xs text-faint hover:text-danger" disabled={pending}>
         {blocked ? "解除封鎖" : "封鎖"}

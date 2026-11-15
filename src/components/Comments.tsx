@@ -1,4 +1,5 @@
 "use client";
+import { ConfirmForm } from "./ConfirmForm";
 import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { addComment, deleteComment, editComment, toggleCommentLike } from "@/app/posts/actions";
@@ -7,6 +8,7 @@ import { timeAgo } from "@/lib/format";
 import { ImageUploader } from "./ImageUploader";
 import { ReportButton } from "./ReportButton";
 import { RichText } from "./RichText";
+import { toast } from "./Toaster";
 import { FormError, Submit } from "./Submit";
 import { ToggleButton } from "./Toggles";
 import { Avatar } from "./ui";
@@ -30,6 +32,7 @@ export function CommentForm({ postId, parentId, onDone, autoFocus }: { postId: n
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state?.ok) {
+      toast(parentId ? "回覆已送出" : "留言已送出");
       ref.current?.reset();
       setNonce((n) => n + 1);
       onDone?.();
@@ -134,15 +137,10 @@ export function CommentItem({
             </button>
           )}
           {(mine || isMod) && (
-            <form
-              action={deleteComment}
-              onSubmit={(e) => {
-                if (!confirm("確定刪除這則留言？")) e.preventDefault();
-              }}
-            >
+            <ConfirmForm action={deleteComment} message="確定刪除這則留言？" confirmLabel="刪除">
               <input type="hidden" name="id" value={c.id} />
               <button className="min-h-8 hover:text-danger">刪除</button>
-            </form>
+            </ConfirmForm>
           )}
           {viewerId && !mine && <ReportButton type="comment" id={c.id} className="min-h-8 hover:text-danger" />}
         </div>

@@ -1,5 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
+import { useConfirm } from "@/components/ConfirmDialog";
+import { toast } from "@/components/Toaster";
 import { PrivateImageField } from "@/components/PrivateImageField";
 import { FormError, Submit } from "@/components/Submit";
 import { orderAction, sendOrderMessage, setPaymentInfo } from "../actions";
@@ -18,13 +20,13 @@ export function ActionButton({
   confirm?: string;
 }) {
   const [state, formAction] = useActionState(orderAction, null);
+  const [dialog, guard] = useConfirm();
+  useEffect(() => {
+    if (state?.ok) toast(`${label}：完成，對方會收到通知`);
+  }, [state, label]);
   return (
-    <form
-      action={formAction}
-      onSubmit={(e) => {
-        if (confirmText && !confirm(confirmText)) e.preventDefault();
-      }}
-    >
+    <form action={formAction} onSubmit={guard(confirmText ? { message: confirmText, confirmLabel: label, danger: /取消|未收到|未付款/.test(label) } : null)}>
+      {dialog}
       <input type="hidden" name="order_id" value={orderId} />
       <input type="hidden" name="action" value={action} />
       <FormError state={state} />
