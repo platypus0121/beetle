@@ -259,6 +259,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"content_views": {
+                  Row: {
+                    "kind": string,"target_id": number,"views": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "kind": string,"target_id": number,"views"?: number
+                  }
+                  Update: {
+                    "kind"?: string,"target_id"?: number,"views"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"conversations": {
                   Row: {
                     "created_at": string,"id": number,"last_message_at": string,"last_message_preview": string | null,"user_a": string,"user_b": string
@@ -623,6 +637,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"page_views_daily": {
+                  Row: {
+                    "day": string,"path": string,"views": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "day": string,"path": string,"views"?: number
+                  }
+                  Update: {
+                    "day"?: string,"path"?: string,"views"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"payment_reports": {
                   Row: {
                     "amount": number,"created_at": string,"id": number,"last5": string | null,"method": string,"order_id": number,"paid_at": string,"screenshot_path": string | null
@@ -789,14 +817,28 @@ isOneToOne: false
                   ]
                 },"shops": {
                   Row: {
-                    "address": string | null,"city": string,"created_at": string,"district": string | null,"facebook": string | null,"hours_note": string | null,"id": number,"instagram": string | null,"items": string | null,"last_verified_on": string | null,"lat": number | null,"lng": number | null,"name": string,"opening_hours": Json | null,"phone": string | null,"source_url": string | null,"status": string,"website": string | null
+                    "address": string | null,"boarding": boolean | null,"boarding_note": string | null,"city": string,"created_at": string,"district": string | null,"facebook": string | null,"hours_note": string | null,"id": number,"instagram": string | null,"items": string | null,"last_verified_on": string | null,"lat": number | null,"lng": number | null,"name": string,"opening_hours": Json | null,"phone": string | null,"source_url": string | null,"status": string,"website": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city": string,"created_at"?: string,"district"?: string | null,"facebook"?: string | null,"hours_note"?: string | null,"id"?: never,"instagram"?: string | null,"items"?: string | null,"last_verified_on"?: string | null,"lat"?: number | null,"lng"?: number | null,"name": string,"opening_hours"?: Json | null,"phone"?: string | null,"source_url"?: string | null,"status"?: string,"website"?: string | null
+                    "address"?: string | null,"boarding"?: boolean | null,"boarding_note"?: string | null,"city": string,"created_at"?: string,"district"?: string | null,"facebook"?: string | null,"hours_note"?: string | null,"id"?: never,"instagram"?: string | null,"items"?: string | null,"last_verified_on"?: string | null,"lat"?: number | null,"lng"?: number | null,"name": string,"opening_hours"?: Json | null,"phone"?: string | null,"source_url"?: string | null,"status"?: string,"website"?: string | null
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string,"created_at"?: string,"district"?: string | null,"facebook"?: string | null,"hours_note"?: string | null,"id"?: never,"instagram"?: string | null,"items"?: string | null,"last_verified_on"?: string | null,"lat"?: number | null,"lng"?: number | null,"name"?: string,"opening_hours"?: Json | null,"phone"?: string | null,"source_url"?: string | null,"status"?: string,"website"?: string | null
+                    "address"?: string | null,"boarding"?: boolean | null,"boarding_note"?: string | null,"city"?: string,"created_at"?: string,"district"?: string | null,"facebook"?: string | null,"hours_note"?: string | null,"id"?: never,"instagram"?: string | null,"items"?: string | null,"last_verified_on"?: string | null,"lat"?: number | null,"lng"?: number | null,"name"?: string,"opening_hours"?: Json | null,"phone"?: string | null,"source_url"?: string | null,"status"?: string,"website"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"site_daily_stats": {
+                  Row: {
+                    "day": string,"views": number,"visitors": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "day": string,"views"?: number,"visitors"?: number
+                  }
+                  Update: {
+                    "day"?: string,"views"?: number,"visitors"?: number
                   }
                   Relationships: [
                     
@@ -1125,6 +1167,9 @@ isOneToOne: false
 "place_bid":
 { Args: { "p_listing": number,"p_max": number }; Returns: Json
                            },
+"record_view":
+{ Args: { "p_path": string,"p_visitor": string }; Returns: undefined
+                           },
 "remove_friend":
 { Args: { "p_target": string }; Returns: undefined
                            },
@@ -1142,6 +1187,9 @@ isOneToOne: false
                            },
 "set_payment_info":
 { Args: { "p_account_name"?: string,"p_account_no"?: string,"p_bank_code"?: string,"p_meetup_place"?: string,"p_meetup_time"?: string,"p_method": string,"p_order": number }; Returns: undefined
+                           },
+"site_totals":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "submit_review":
 { Args: { "p_body"?: string,"p_order": number,"p_rating": number }; Returns: undefined

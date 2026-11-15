@@ -56,7 +56,7 @@ function summarize(h: Hours): string[] {
   return out;
 }
 
-export default async function ShopsPage({ searchParams }: { searchParams: Promise<{ city?: string }> }) {
+export default async function ShopsPage({ searchParams }: { searchParams: Promise<{ city?: string; boarding?: string }> }) {
   const sp = await searchParams;
   const supabase = await createClient();
   const session = await getSession();
@@ -64,7 +64,9 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
   const shops = all ?? [];
   const cities = CITIES.filter((c) => shops.some((s) => s.city === c));
   const city = cities.includes(sp.city ?? "") ? sp.city! : null;
-  const list = shops.filter((s) => !city || s.city === city).sort((a, b) => CITIES.indexOf(a.city) - CITIES.indexOf(b.city));
+  const boardingOnly = sp.boarding === "1";
+  const boardingCount = shops.filter((s) => s.boarding && (!city || s.city === city)).length;
+  const list = shops.filter((s) => (!city || s.city === city) && (!boardingOnly || s.boarding)).sort((a, b) => CITIES.indexOf(a.city) - CITIES.indexOf(b.city));
   const latest = shops.map((s) => s.last_verified_on).filter(Boolean).sort().pop();
 
   return (
@@ -106,8 +108,26 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
           </Link>
         ))}
       </div>
+      <div className="mb-4 flex items-center gap-2 text-sm">
+        <Link
+          href={`/shops?${new URLSearchParams({ ...(city ? { city } : {}), ...(boardingOnly ? {} : { boarding: "1" }) })}`}
+          className={`chip min-h-8 px-3 ${boardingOnly ? "chip-accent" : ""}`}
+          aria-pressed={boardingOnly}
+        >
+          {boardingOnly ? "✓ " : ""}只看可代客溫控寄養（{boardingCount}）
+        </Link>
+        <span className="text-xs text-sub">寄養條件與費用請先洽店家</span>
+      </div>
       {list.length === 0 ? (
-        <Empty title="這個縣市還沒有收錄的店家" hint="知道哪間店？歡迎私訊版主提供" action={<Link href="/shops" className="btn btn-sm">看全部縣市</Link>} />
+        boardingOnly ? (
+          <Empty
+            title="目前沒有確認提供溫控寄養的店家"
+            hint="多數店家的寄養服務還在確認中，可以直接問店家；知道哪間有提供，歡迎回報給版主"
+            action={<Link href={city ? `/shops?city=${encodeURIComponent(city)}` : "/shops"} className="btn btn-sm">看全部店家</Link>}
+          />
+        ) : (
+          <Empty title="這個縣市還沒有收錄的店家" hint="知道哪間店？歡迎私訊版主提供" action={<Link href="/shops" className="btn btn-sm">看全部縣市</Link>} />
+        )
       ) : (
         <ul className="space-y-3">
           {list.map((s) => {
@@ -118,6 +138,7 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-[16px] font-semibold">{s.name}</h2>
                   <OpenBadge hours={hours} />
+                  {s.boarding && <span className="chip chip-accent">溫控寄養</span>}
                 </div>
                 <p className="mt-0.5 text-xs text-sub">
                   {s.city}
@@ -146,6 +167,19 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
                       </dd>
                     </div>
                   )}
+                  <div className="flex gap-3">
+                    <dt className="w-10 shrink-0 text-sub">寄養</dt>
+                    <dd>
+                      {s.boarding === true ? (
+                        <span className="chip chip-accent">提供代客溫控寄養</span>
+                      ) : s.boarding === false ? (
+                        <span className="text-sub">不提供寄養</span>
+                      ) : (
+                        <span className="text-sub">尚未確認，請洽店家</span>
+                      )}
+                      {s.boarding_note && <p className="mt-0.5 text-xs text-sub">{s.boarding_note}</p>}
+                    </dd>
+                  </div>
                   <div className="flex gap-3">
                     <dt className="w-10 shrink-0 text-sub">時間</dt>
                     <dd>

@@ -50,7 +50,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const viewerId = session?.userId ?? null;
   const mod = session ? isMod(session.profile) : false;
 
-  const [{ data: rawComments }, postMedia, likeRes, markRes] = await Promise.all([
+  const [{ data: rawComments }, postMedia, likeRes, markRes, viewsRes] = await Promise.all([
     supabase
       .from("comments")
       .select("id, parent_id, body, status, like_count, created_at, edited_at, author:profiles!comments_author_id_fkey(id, username, avatar_path)")
@@ -62,6 +62,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     viewerId
       ? supabase.from("bookmarks").select("target_id").eq("user_id", viewerId).eq("target_type", "post").eq("target_id", postId).maybeSingle()
       : null,
+    supabase.from("content_views").select("views").eq("kind", "post").eq("target_id", postId).maybeSingle(),
   ]);
   const commentIds = (rawComments ?? []).map((c) => c.id);
   const [commentMedia, likedRows] = await Promise.all([
@@ -119,6 +120,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         <time dateTime={post.created_at} className="text-xs text-faint">
           {formatDateTime(post.created_at)}
         </time>
+        <span className="text-xs text-faint">・瀏覽 {viewsRes.data?.views ?? 0}</span>
       </div>
       <RichText text={post.body} className="mb-4 text-[16px]" />
       <Gallery media={postMedia.get(postId) ?? []} youtubeId={post.youtube_id} />

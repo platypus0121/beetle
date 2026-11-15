@@ -50,7 +50,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const auction = l.sale_type === "auction" ? l.auctions : null;
   const live = LIVE_STAGES.includes(l.stage);
 
-  const [media, rating, markRes, bidsRes, myAuto, myOrder, blocked] = await Promise.all([
+  const [media, rating, markRes, bidsRes, myAuto, myOrder, blocked, viewsRes] = await Promise.all([
     mediaFor("listing", [listingId]),
     supabase.from("profile_ratings").select("avg_rating, review_count").eq("user_id", l.seller_id).maybeSingle(),
     viewerId ? supabase.from("bookmarks").select("target_id").eq("user_id", viewerId).eq("target_type", "listing").eq("target_id", listingId).maybeSingle() : null,
@@ -58,6 +58,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
     auction && viewerId ? supabase.from("auto_bids").select("max_amount").eq("listing_id", listingId).eq("bidder_id", viewerId).maybeSingle() : null,
     viewerId ? supabase.from("orders").select("id, status").eq("listing_id", listingId).order("id", { ascending: false }).limit(1).maybeSingle() : null,
     viewerId && !mine ? supabase.rpc("is_blocked_between", { a: viewerId, b: l.seller_id }) : null,
+    supabase.from("content_views").select("views").eq("kind", "listing").eq("target_id", listingId).maybeSingle(),
   ]);
 
   const sellerAgeDays = Math.floor((Date.now() - new Date(l.seller.created_at).getTime()) / 86400_000);
@@ -153,7 +154,9 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
           ))}
         </dl>
         {l.description && <RichText text={l.description} className="mt-4 text-[15px]" />}
-        <p className="mt-4 text-xs text-faint">上架於 {timeAgo(l.created_at)}</p>
+        <p className="mt-4 text-xs text-faint">
+          上架於 {timeAgo(l.created_at)}・瀏覽 {viewsRes.data?.views ?? 0}
+        </p>
       </div>
 
       <aside className="space-y-4">

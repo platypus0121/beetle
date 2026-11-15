@@ -152,6 +152,7 @@ export type ShopRow = {
   id: number; name: string; city: string; district: string | null; address: string | null; phone: string | null;
   opening_hours: Record<string, string[][]> | null; hours_note: string | null; website: string | null; facebook: string | null;
   instagram: string | null; items: string | null; lat: number | null; lng: number | null; status: string; source_url: string | null; last_verified_on: string | null;
+  boarding: boolean | null; boarding_note: string | null;
 };
 export function ShopForm({ shop }: { shop?: ShopRow }) {
   const [state, action] = useActionState(saveShop, null);
@@ -198,6 +199,12 @@ export function ShopForm({ shop }: { shop?: ShopRow }) {
         <option value="open">營業中（公開顯示）</option>
         <option value="closed">已歇業（不顯示）</option>
       </select>
+      <select name="boarding" defaultValue={shop?.boarding == null ? "" : shop.boarding ? "yes" : "no"} className="input" aria-label="代客溫控寄養">
+        <option value="">溫控寄養：尚未確認</option>
+        <option value="yes">有提供代客溫控寄養</option>
+        <option value="no">確認不提供寄養</option>
+      </select>
+      <input name="boarding_note" defaultValue={shop?.boarding_note ?? ""} maxLength={200} placeholder="寄養說明（例：限幼蟲、需預約、收費方式）" aria-label="寄養說明" className="input col-span-2" />
       <Submit className="btn btn-primary btn-sm">{shop ? "儲存" : "新增店家"}</Submit>
     </form>
   );

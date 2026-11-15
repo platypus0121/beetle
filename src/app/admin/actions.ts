@@ -146,6 +146,8 @@ export async function saveShop(_: unknown, form: FormData): Promise<ActionResult
     status: form.get("status") === "closed" ? "closed" : "open",
     source_url: url("source_url"),
     last_verified_on: /^\d{4}-\d{2}-\d{2}$/.test(s(form, "last_verified_on")) ? s(form, "last_verified_on") : null,
+    boarding: form.get("boarding") === "yes" ? true : form.get("boarding") === "no" ? false : null,
+    boarding_note: s(form, "boarding_note", 200) || null,
   };
   const { error } = id ? await supabase.from("shops").update(row).eq("id", id) : await supabase.from("shops").insert(row);
   if (error) return fail(dbError(error));

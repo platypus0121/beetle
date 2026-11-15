@@ -3,7 +3,9 @@ import { Suspense } from "react";
 import { Nav } from "@/components/Nav";
 import { NavProgress } from "@/components/NavProgress";
 import { Toaster } from "@/components/Toaster";
-import { SiteFooter } from "@/components/SiteFooter";
+import { SiteFooter, type SiteTotals } from "@/components/SiteFooter";
+import { ViewTracker } from "@/components/ViewTracker";
+import { createClient } from "@/lib/supabase/server";
 import { SITE_DESC, SITE_NAME } from "@/lib/constants";
 import "./globals.css";
 
@@ -29,17 +31,25 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  let totals: SiteTotals | null = null;
+  try {
+    const { data } = await (await createClient()).rpc("site_totals");
+    totals = data as SiteTotals | null;
+  } catch {
+    totals = null;
+  }
   return (
     <html lang="zh-Hant-TW">
       <body>
         <Suspense>
           <NavProgress />
           <Toaster />
+          <ViewTracker />
         </Suspense>
         <Nav />
         <main className="mx-auto max-w-5xl px-4 pt-5 pb-10 sm:pb-12">{children}</main>
-        <SiteFooter />
+        <SiteFooter totals={totals} />
       </body>
     </html>
   );
