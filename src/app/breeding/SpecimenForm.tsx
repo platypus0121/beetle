@@ -47,7 +47,7 @@ export function SpecimenForm({ initial, parents }: { initial?: SpecimenInitial; 
         <input id="label" name="label" required maxLength={40} defaultValue={initial?.label} placeholder="例：DHH-2026-03" className="input" />
       </div>
       <div>
-        <span className="label">物種</span>
+        <span className="label">品種</span>
         <SpeciesPicker initial={initial?.species ?? null} required />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -182,7 +182,7 @@ export function SpecimenForm({ initial, parents }: { initial?: SpecimenInitial; 
         <div className="grid grid-cols-2 gap-2">
           {[
             ["private", "只有我", "預設"],
-            ["public", "公開", "顯示在個人頁與物種頁"],
+            ["public", "公開", "顯示在個人頁與品種頁"],
           ].map(([k, t, d]) => (
             <label key={k} className="cursor-pointer">
               <input type="radio" name="visibility" value={k} defaultChecked={(initial?.visibility ?? "private") === k} className="peer sr-only" />

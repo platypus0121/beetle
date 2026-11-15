@@ -142,7 +142,7 @@ export function SpeciesForm({ s }: { s?: SpeciesRow }) {
         <input type="checkbox" name="is_native_tw" defaultChecked={s?.is_native_tw} className="size-4 accent-accent" />
         台灣原生
       </label>
-      <Submit className="btn btn-primary btn-sm col-span-2">{s ? "儲存" : "新增物種"}</Submit>
+      <Submit className="btn btn-primary btn-sm col-span-2">{s ? "儲存" : "新增品種"}</Submit>
     </form>
   );
 }

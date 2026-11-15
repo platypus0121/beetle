@@ -11,7 +11,7 @@ const NAV = [
   ["/admin/disputes", "申訴"],
   ["/admin/content", "內容"],
   ["/admin/users", "會員"],
-  ["/admin/species", "物種"],
+  ["/admin/species", "品種"],
   ["/admin/shops", "店家"],
   ["/admin/words", "禁用詞"],
   ["/admin/log", "紀錄"],

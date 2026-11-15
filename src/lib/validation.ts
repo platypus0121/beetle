@@ -21,7 +21,7 @@ const optionalText = (max: number) =>
 const optionalId = z
   .union([z.string(), z.number(), z.null(), z.undefined()])
   .transform((v) => (v === "" || v == null ? null : Number(v)))
-  .refine((v) => v === null || (Number.isInteger(v) && v > 0), "物種不正確");
+  .refine((v) => v === null || (Number.isInteger(v) && v > 0), "品種不正確");
 const idList = z.array(z.coerce.number().int().positive()).max(20).default([]);
 
 export const postSchema = z.object({
@@ -83,7 +83,7 @@ export const listingSchema = z
   })
   .superRefine((v, ctx) => {
     if (v.stage !== "supply" && v.species_id === null)
-      ctx.addIssue({ code: "custom", path: ["species_id"], message: "請選擇物種" });
+      ctx.addIssue({ code: "custom", path: ["species_id"], message: "請選擇品種" });
     if (v.sale_type === "auction") {
       if (!v.min_increment) ctx.addIssue({ code: "custom", path: ["min_increment"], message: "請輸入每次最低加價" });
       if (!v.ends_at || Number.isNaN(Date.parse(v.ends_at)))

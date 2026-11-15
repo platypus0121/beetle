@@ -30,7 +30,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       <div className="space-y-7">
         {!!species?.length && (
           <section>
-            <h2 className="mb-2 text-sm font-semibold text-sub">物種</h2>
+            <h2 className="mb-2 text-sm font-semibold text-sub">品種</h2>
             <div className="flex flex-wrap gap-2">
               {species.map((s) => (
                 <Link key={s.id} href={`/species/${s.id}`} className="rounded-lg border border-line px-3 py-2 text-sm hover:bg-wash">
@@ -83,7 +83,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <div className="mx-auto max-w-3xl">
       <PageHeader title="搜尋" />
       <form className="mb-5 flex gap-2">
-        <input name="q" defaultValue={q} placeholder="物種、文章、商品、會員" className="input" autoFocus={!q} aria-label="搜尋" />
+        <input name="q" defaultValue={q} placeholder="品種、文章、商品、會員" className="input" autoFocus={!q} aria-label="搜尋" />
         <button className="btn btn-primary">搜尋</button>
       </form>
       {results}

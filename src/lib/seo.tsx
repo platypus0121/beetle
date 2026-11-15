@@ -14,7 +14,7 @@ export function JsonLd({ data }: { data: object | object[] }) {
   );
 }
 
-/** 麵包屑：[["物種", "/species"], ["長戟大兜蟲", "/species/32"]]，首頁會自動加在最前面 */
+/** 麵包屑：[["品種", "/species"], ["長戟大兜蟲", "/species/32"]]，首頁會自動加在最前面 */
 export function breadcrumb(items: [string, string][]) {
   return {
     "@context": "https://schema.org",

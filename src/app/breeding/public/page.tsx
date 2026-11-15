@@ -19,7 +19,7 @@ export default async function PublicSpecimensPage({ searchParams }: { searchPara
   const { data } = await q;
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader title="公開的飼育紀錄" sub={sp.species && data?.[0]?.species ? `物種：${data[0].species.common_name}` : "會員選擇公開分享的個體"} />
+      <PageHeader title="公開的飼育紀錄" sub={sp.species && data?.[0]?.species ? `品種：${data[0].species.common_name}` : "會員選擇公開分享的個體"} />
       {!data?.length ? (
         <Empty title="還沒有公開的紀錄" />
       ) : (

@@ -120,7 +120,7 @@ export function SmartForm({
       restore(form, last.current);
       save(last.current);
     }
-    // 欄位外層可標 data-field（例如物種選擇器、勾選群組），優先捲到那裡
+    // 欄位外層可標 data-field（例如品種選擇器、勾選群組），優先捲到那裡
     const f = state.field ? CSS.escape(state.field) : null;
     const box = f ? form.querySelector<HTMLElement>(`[data-field="${f}"]`) : null;
     const input = box

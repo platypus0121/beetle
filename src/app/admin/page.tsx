@@ -44,7 +44,7 @@ export default async function AdminHome() {
   const todo = [
     { href: "/admin/reports", label: "待處理檢舉", n: reports },
     { href: "/admin/disputes", label: "待裁決申訴", n: disputes },
-    { href: "/admin/species", label: "待審物種提報", n: subs },
+    { href: "/admin/species", label: "待審品種提報", n: subs },
   ];
   const stats = [
     ["會員總數", users],

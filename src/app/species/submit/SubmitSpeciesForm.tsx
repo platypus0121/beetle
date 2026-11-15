@@ -12,7 +12,7 @@ export function SubmitSpeciesForm() {
       <div className="notice">
         已送出，審核結果會以通知告知。
         <Link href="/species" className="ml-2 text-accent underline">
-          回物種列表
+          回品種列表
         </Link>
       </div>
     );

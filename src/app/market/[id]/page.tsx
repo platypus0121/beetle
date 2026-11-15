@@ -78,7 +78,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const specs: [string, React.ReactNode][] = [];
   if (l.species)
     specs.push([
-      "物種",
+      "品種",
       <Link key="s" href={`/species/${l.species.id}`} className="text-accent">
         {l.species.common_name}
       </Link>,

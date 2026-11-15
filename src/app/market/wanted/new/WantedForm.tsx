@@ -14,7 +14,7 @@ export function WantedForm({ defaultCity }: { defaultCity: string | null }) {
     <SmartForm action={action} state={state} draftKey={"wanted"} className="space-y-4">
       <FormError state={state} />
       <div>
-        <span className="label">物種（選填）</span>
+        <span className="label">品種（選填）</span>
         <SpeciesPicker onSelect={setSpecies} />
         {species?.is_protected && <p className="notice notice-danger mt-2">保育類野生動物依法不得買賣，無法刊登徵求。</p>}
       </div>

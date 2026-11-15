@@ -111,10 +111,10 @@ export default async function HomePage({
       {shown.length === 0 ? (
         <Empty
           title={tab === "following" ? "還沒有追蹤的內容" : "還沒有文章"}
-          hint={tab === "following" ? "到物種頁或會員頁按「追蹤」，新文章會出現在這裡" : "成為第一個分享的人"}
+          hint={tab === "following" ? "到品種頁或會員頁按「追蹤」，新文章會出現在這裡" : "成為第一個分享的人"}
           action={
             <Link href={tab === "following" ? "/species" : "/posts/new"} className="btn btn-primary btn-sm">
-              {tab === "following" ? "逛逛物種" : "發表文章"}
+              {tab === "following" ? "逛逛品種" : "發表文章"}
             </Link>
           }
         />

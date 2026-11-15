@@ -130,7 +130,7 @@ try {
   // ── 載入骨架（慢速網路）──
   const cdp = await q.context().newCDPSession(q);
   await cdp.send("Network.emulateNetworkConditions", { offline: false, latency: 1500, downloadThroughput: 200000, uploadThroughput: 200000 });
-  await q.getByRole("link", { name: "物種" }).first().click();
+  await q.getByRole("link", { name: "品種" }).first().click();
   await q.locator('[aria-busy="true"]').first().waitFor({ timeout: 8000 });
   await shot(q, "ux-09-skeleton");
   await cdp.send("Network.emulateNetworkConditions", { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });

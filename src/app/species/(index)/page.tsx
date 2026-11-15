@@ -5,8 +5,8 @@ import { FAMILY_GROUPS } from "@/lib/constants";
 import { Empty, PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "甲蟲物種圖鑑（鍬形蟲・兜蟲・金龜）",
-  description: "鍬形蟲、兜蟲、獨角仙、金龜物種列表：中文俗名、學名、日文名對照，標示保育類，以及各物種的飼育文章與交易。",
+  title: "甲蟲品種圖鑑（鍬形蟲・兜蟲・金龜）",
+  description: "鍬形蟲、兜蟲、獨角仙、金龜品種列表：中文俗名、學名、日文名對照，標示保育類，以及各品種的飼育文章與交易。",
   alternates: { canonical: "/species" },
 };
 
@@ -28,17 +28,17 @@ export default async function SpeciesPage({ searchParams }: { searchParams: Prom
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
-        title="甲蟲物種"
-        sub="文章、交易與飼育紀錄都綁定物種，從這裡可以找到同一種蟲的所有內容。"
+        title="甲蟲品種"
+        sub="文章、交易與飼育紀錄都綁定品種，從這裡可以找到同一種蟲的所有內容。"
         action={
           <Link href="/species/submit" className="btn btn-sm">
-            提報新物種
+            提報新品種
           </Link>
         }
       />
       <form className="mb-3 flex gap-2">
         {g && <input type="hidden" name="g" value={g} />}
-        <input name="q" defaultValue={q} placeholder="搜尋俗名、學名、日文名" className="input" aria-label="搜尋物種" />
+        <input name="q" defaultValue={q} placeholder="搜尋俗名、學名、日文名" className="input" aria-label="搜尋品種" />
         <button className="btn">搜尋</button>
       </form>
       <div className="mb-4 flex gap-2">
@@ -51,7 +51,7 @@ export default async function SpeciesPage({ searchParams }: { searchParams: Prom
           </Link>
         ))}
       </div>
-      {!data?.length && <Empty title="找不到符合的物種" hint="可以提報新增，版主審核後就會出現" action={<Link href="/species/submit" className="btn btn-sm">提報新物種</Link>} />}
+      {!data?.length && <Empty title="找不到符合的品種" hint="可以提報新增，版主審核後就會出現" action={<Link href="/species/submit" className="btn btn-sm">提報新品種</Link>} />}
       {groups.map((k) => {
         const list = (data ?? []).filter((s) => s.family_group === k);
         if (!list.length) return null;

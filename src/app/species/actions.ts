@@ -26,7 +26,7 @@ export async function submitSpecies(_: unknown, form: FormData): Promise<ActionR
   if (!/^[A-Z][a-z]+ [a-z]+( [a-z]+)?$/.test(sci)) return fail("學名格式請用「屬名 種小名（亞種名）」，例如 Dynastes hercules lichyi");
   if (!["stag", "rhino", "scarab"].includes(group)) return fail("請選擇分類");
   const { data: exists } = await supabase.from("species").select("id").eq("scientific_name", sci).maybeSingle();
-  if (exists) return fail("物種表已經有這個學名了");
+  if (exists) return fail("品種表已經有這個學名了");
   const { error } = await supabase.from("species_submissions").insert({
     user_id: auth.user.id,
     common_name: common,

@@ -20,7 +20,7 @@ export default async function GuidePage() {
       <Section n="1" title="禁止交易的項目">
         <ul className="list-disc space-y-1.5 pl-5">
           <li>
-            <strong>保育類野生動物</strong>：依《野生動物保育法》，保育類不得買賣、陳列或展示，活體、標本、卵與產製品都一樣。本站在上架時就會擋下，也不能刊登徵求。目前物種表標記為保育類的有：
+            <strong>保育類野生動物</strong>：依《野生動物保育法》，保育類不得買賣、陳列或展示，活體、標本、卵與產製品都一樣。本站在上架時就會擋下，也不能刊登徵求。目前品種表標記為保育類的有：
             <ul className="mt-1 space-y-0.5">
               {(protectedSpecies ?? []).map((s) => (
                 <li key={s.id}>
@@ -31,7 +31,7 @@ export default async function GuidePage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-1 text-sm text-sub">名單以主管機關最新公告為準；即使物種表尚未標記，只要是公告的保育類一律禁止。</p>
+            <p className="mt-1 text-sm text-sub">名單以主管機關最新公告為準；即使品種表尚未標記，只要是公告的保育類一律禁止。</p>
           </li>
           <li>在國家公園、自然保留區、野生動物保護區等禁止採集的區域取得的個體。</li>
           <li>未依規定申報檢疫、來源不明的輸入活體。</li>
@@ -49,7 +49,7 @@ export default async function GuidePage() {
       <Section n="3" title="商品資訊怎麼填">
         <ul className="list-disc space-y-1.5 pl-5">
           <li>
-            <strong>學名</strong>：選擇物種後自動帶入。亞種、產地不同價差很大，請選到正確的亞種。
+            <strong>學名</strong>：選擇品種後自動帶入。亞種、產地不同價差很大，請選到正確的亞種。
           </li>
           <li>
             <strong>產地</strong>：盡量寫到島嶼或地區，例如「印尼 蘇門答臘 明古魯」。

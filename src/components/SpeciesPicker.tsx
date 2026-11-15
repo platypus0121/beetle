@@ -80,13 +80,13 @@ export function SpeciesPicker({
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
-          aria-label="搜尋物種"
+          aria-label="搜尋品種"
           autoComplete="off"
         />
       )}
       {open && !selected && (
         <ul className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-lg border border-line bg-white py-1 shadow-lg">
-          {options.length === 0 && <li className="px-3 py-2 text-sm text-sub">找不到符合的物種，可到「物種」頁提報新增</li>}
+          {options.length === 0 && <li className="px-3 py-2 text-sm text-sub">找不到符合的品種，可到「品種」頁提報新增</li>}
           {options.map((s) => (
             <li key={s.id}>
               <button type="button" className="block w-full px-3 py-2 text-left hover:bg-wash" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(s)}>

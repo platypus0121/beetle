@@ -12,7 +12,7 @@ export function SiteFooter({ totals }: { totals: SiteTotals | null }) {
   return (
     <footer className="mx-auto flex max-w-5xl flex-wrap gap-x-5 gap-y-2 border-t border-line px-4 pt-6 pb-24 text-xs text-sub sm:pb-6">
       <Link href="/market">甲蟲買賣</Link>
-      <Link href="/species">甲蟲物種</Link>
+      <Link href="/species">甲蟲品種</Link>
       <Link href="/shops">全台甲蟲店</Link>
       <Link href="/breeding/public">飼育紀錄</Link>
       <Link href="/rules">站規</Link>

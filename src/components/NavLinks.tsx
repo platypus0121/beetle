@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 const LINKS = [
   { href: "/", label: "討論", match: /^\/($|posts)/ },
   { href: "/market", label: "交易", match: /^\/(market|orders)/ },
-  { href: "/species", label: "物種", match: /^\/species/ },
+  { href: "/species", label: "品種", match: /^\/species/ },
   { href: "/breeding", label: "飼育紀錄", match: /^\/breeding/ },
   { href: "/shops", label: "甲蟲店", match: /^\/shops/ },
 ];
@@ -44,7 +44,7 @@ export function BottomNav({ loggedIn }: { loggedIn: boolean }) {
     { href: "/", label: "討論", icon: ICONS.home, active: /^\/($|posts\/\d)/.test(path) },
     { href: "/market", label: "交易", icon: ICONS.market, active: /^\/(market|orders)/.test(path) },
     { href: "/new", label: "發布", icon: ICONS.plus, primary: true, active: false },
-    { href: "/species", label: "物種", icon: ICONS.species, active: /^\/species/.test(path) },
+    { href: "/species", label: "品種", icon: ICONS.species, active: /^\/species/.test(path) },
     { href: loggedIn ? "/me" : "/login", label: loggedIn ? "我的" : "登入", icon: ICONS.me, active: /^\/(me|settings|breeding|friends)/.test(path) },
   ];
   return (

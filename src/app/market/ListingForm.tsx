@@ -92,7 +92,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
       </div>
 
       <div data-field="species_id">
-        <span className="label">物種{supply && "（用品可不填）"}</span>
+        <span className="label">品種{supply && "（用品可不填）"}</span>
         <SpeciesPicker initial={species} onSelect={setSpecies} />
         <FieldError name="species_id" />
         {blocked && (

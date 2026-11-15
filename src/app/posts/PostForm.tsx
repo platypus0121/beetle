@@ -46,10 +46,10 @@ export function PostForm({ initial, videoEnabled, presetSpecies }: { initial?: P
         </div>
       </div>
       <div data-field="species_id">
-        <span className="label">物種（選填）</span>
+        <span className="label">品種（選填）</span>
         <SpeciesPicker initial={initial?.species ?? presetSpecies ?? null} />
         <FieldError name="species_id" />
-        <p className="hint">綁定物種後，其他人可以從物種頁找到這篇文章</p>
+        <p className="hint">綁定品種後，其他人可以從品種頁找到這篇文章</p>
       </div>
       <div>
         <div className="flex items-baseline justify-between">

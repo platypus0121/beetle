@@ -37,7 +37,7 @@ export async function saveSpecimen(_: unknown, form: FormData): Promise<ActionRe
   const sex = String(form.get("sex"));
   const size = num(form, "final_size_mm");
   if (!label) return fail("請填寫個體名稱或編號");
-  if (!species) return fail("請選擇物種");
+  if (!species) return fail("請選擇品種");
   if (!(stage in SPECIMEN_STAGES) || !["male", "female", "unknown"].includes(sex)) return fail("資料不正確");
   if (Number.isNaN(size)) return fail("尺寸不正確");
   const editId = idOrNull(form, "id");
