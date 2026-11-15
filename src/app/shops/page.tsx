@@ -69,7 +69,7 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
         ))}
       </div>
       {list.length === 0 ? (
-        <Empty title="這個縣市還沒有收錄的店家" />
+        <Empty title="這個縣市還沒有收錄的店家" hint="知道哪間店？歡迎私訊版主提供" action={<Link href="/shops" className="btn btn-sm">看全部縣市</Link>} />
       ) : (
         <ul className="space-y-3">
           {list.map((s) => {

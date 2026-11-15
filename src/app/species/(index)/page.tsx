@@ -50,7 +50,7 @@ export default async function SpeciesPage({ searchParams }: { searchParams: Prom
           </Link>
         ))}
       </div>
-      {!data?.length && <Empty title="找不到符合的物種" hint="可以提報新增，版主審核後就會出現" />}
+      {!data?.length && <Empty title="找不到符合的物種" hint="可以提報新增，版主審核後就會出現" action={<Link href="/species/submit" className="btn btn-sm">提報新物種</Link>} />}
       {groups.map((k) => {
         const list = (data ?? []).filter((s) => s.family_group === k);
         if (!list.length) return null;

@@ -107,7 +107,7 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
                 帶入上架
               </Link>
             )}
-            <ConfirmForm action={deleteSpecimen} message="確定刪除這隻個體與所有紀錄？無法復原。" className="ml-auto">
+            <ConfirmForm action={deleteSpecimen} message="確定刪除這隻個體與所有紀錄？無法復原。" confirmLabel="刪除" className="ml-auto">
               <input type="hidden" name="id" value={sid} />
               <button className="btn btn-sm btn-danger">刪除</button>
             </ConfirmForm>

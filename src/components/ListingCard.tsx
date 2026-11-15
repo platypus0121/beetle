@@ -41,11 +41,11 @@ export function ListingCard({ l, cover }: { l: ListingCardData; cover: string | 
   ].filter(Boolean);
   const auction = l.sale_type === "auction" ? l.auctions : null;
   return (
-    <article className="card relative overflow-hidden">
+    <article className="card press relative overflow-hidden">
       <div className="relative aspect-[4/3] bg-wash">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover} alt="" loading="lazy" className="size-full object-cover" />
+          <img src={cover} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
         ) : (
           <div className="flex size-full items-center justify-center text-xs text-faint">無照片</div>
         )}

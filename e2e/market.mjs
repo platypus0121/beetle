@@ -1,4 +1,4 @@
-import { BASE, cleanup, launch, newUser, shot, sql, step, testImage } from "./helpers.mjs";
+import { BASE, cleanup, launch, newUser, shot, sql, step, testImage, confirmIn } from "./helpers.mjs";
 
 cleanup();
 const browser = await launch();
@@ -77,7 +77,8 @@ try {
   await shot(b, "13-listing-detail");
   await b.fill('textarea[name="note"]', "請加保冷");
   await b.check('input[name="agreed"]');
-  await b.getByRole("button", { name: "我要購買" }).click();
+  await b.locator(".fixed.bottom-0").getByRole("button", { name: "我要購買" }).click(); // 底部購買列 → 捲到下單表單
+  await b.locator("#buy").getByRole("button", { name: "我要購買" }).click();
   await b.waitForURL(/\/orders\/\d+$/);
   const orderId = Number(b.url().split("/").pop());
   await expectText(b, "等待賣家確認");
@@ -113,6 +114,7 @@ try {
   await s.reload();
   await expectText(s, "查看轉帳截圖");
   await s.getByRole("button", { name: "確認已收到款項" }).click();
+  await confirmIn(s, "確認已收到款項");
   await expectText(s, "請出貨");
   await s.fill('input[name="tracking_no"]', "906123456789");
   await s.getByRole("button", { name: "已出貨" }).click();
@@ -122,6 +124,7 @@ try {
   await b.reload();
   await expectText(b, "906123456789");
   await b.getByRole("button", { name: "確認收貨，完成交易" }).click();
+  await confirmIn(b, "確認收貨，完成交易");
   await expectText(b, "交易完成");
   await b.getByRole("link", { name: "評價賣家" }).click();
   await b.fill('textarea[name="body"]', "包裝仔細，個體漂亮");
@@ -160,19 +163,19 @@ try {
   await b.goto(`${BASE}/market/${auctionId}`);
   await b.fill("#amount", "2000");
   await b.check('input[name="agreed"]');
-  await b.getByRole("button", { name: "出價", exact: true }).click();
+  await b.locator("#buy").getByRole("button", { name: "出價", exact: true }).click();
   await expectText(b, "出價成功，你目前領先");
   await b2.goto(`${BASE}/market/${auctionId}`);
   await b2.fill("#amount", "1300");
   await b2.check('input[name="agreed"]');
-  await b2.getByRole("button", { name: "出價", exact: true }).click();
+  await b2.locator("#buy").getByRole("button", { name: "出價", exact: true }).click();
   await expectText(b2, "你被超過了");
   // 即時更新：b 的畫面不重新整理就應看到新價格
   await b.getByText("NT$1,400").first().waitFor({ timeout: 15000 });
   step("兩人競標：自動出價代為加價到 1,400，另一人的畫面即時更新");
   await b2.fill("#amount", "2500");
   await b2.check('input[name="agreed"]');
-  await b2.getByRole("button", { name: "出價", exact: true }).click();
+  await b2.locator("#buy").getByRole("button", { name: "出價", exact: true }).click();
   await expectText(b2, "出價成功，你目前領先");
   await shot(b2, "16-auction");
   const n = sql(`select count(*) from public.notifications where user_id = '${buyer.id}' and type = 'auction'`);
@@ -184,7 +187,7 @@ try {
   await b.reload();
   await b.fill("#amount", "2300");
   await b.check('input[name="agreed"]');
-  await b.getByRole("button", { name: "出價", exact: true }).click();
+  await b.locator("#buy").getByRole("button", { name: "出價", exact: true }).click();
   await expectText(b, "結標時間已延長 5 分鐘");
   step("結標前 5 分鐘內出價 → 自動延長 5 分鐘");
 

@@ -85,7 +85,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
       <div>
         {header}
         {list.length === 0 ? (
-          <Empty title="目前沒有徵求" hint="想找特定的蟲？刊登徵求讓賣家來找你" />
+          <Empty title="目前沒有徵求" hint="想找特定的蟲？刊登徵求讓賣家來找你" action={<Link href="/market/wanted/new" className="btn btn-primary btn-sm">刊登徵求</Link>} />
         ) : (
           <ul className="mx-auto max-w-2xl divide-y divide-line">
             {list.map((w) => (

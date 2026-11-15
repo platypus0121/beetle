@@ -145,6 +145,7 @@ export function SmartForm({
           props.onSubmit?.(e);
           if (e.defaultPrevented) return;
           last.current = snapshot(e.currentTarget);
+          if (saveTimer.current) clearTimeout(saveTimer.current);
           setOffer(null);
           save(null); // 送出就先清掉；失敗時上面會再存回去
         }}

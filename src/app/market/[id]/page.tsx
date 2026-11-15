@@ -121,7 +121,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
         </div>
         <h1 className="mt-2 text-xl leading-snug font-semibold">{l.title}</h1>
         {!auction && <p className="mt-1 text-2xl font-semibold text-accent">{price(l.price)}</p>}
-        <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line text-sm">
+        <dl className="mt-4 grid grid-flow-row-dense grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line text-sm">
           {specs.map(([k, v]) => (
             <div key={k} className={`min-w-0 bg-white px-3 py-2 ${WIDE.has(k) || k === lastHalf ? "col-span-2" : ""}`}>
               <dt className="text-xs text-sub">{k}</dt>

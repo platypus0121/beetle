@@ -74,7 +74,8 @@ try {
   buyer.page.on("dialog", (d) => d.accept());
   await buyer.page.goto(`${BASE}/market/${lid}`);
   await buyer.page.check('input[name="agreed"]');
-  await buyer.page.getByRole("button", { name: "我要購買" }).click();
+  await buyer.page.locator(".fixed.bottom-0").getByRole("button", { name: "我要購買" }).click(); // 底部購買列 → 捲到下單表單
+  await buyer.page.locator("#buy").getByRole("button", { name: "我要購買" }).click();
   await buyer.page.waitForURL(/\/orders\/\d+$/);
   const oid = buyer.page.url().split("/").pop();
   await user.page.goto(`${BASE}/orders/${oid}`);

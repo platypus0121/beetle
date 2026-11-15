@@ -68,3 +68,8 @@ export function cleanup() {
        delete from public.listings where seller_id in (select id from auth.users where email like '%@e2e.local');
        delete from auth.users where email like '%@e2e.local'`);
 }
+
+// 站內確認對話框（取代 confirm()）：按下觸發按鈕後，在對話框裡按確定
+export async function confirmIn(page, name) {
+  await page.locator("dialog[open]").getByRole("button", { name, exact: true }).click();
+}

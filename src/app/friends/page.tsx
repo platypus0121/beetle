@@ -55,7 +55,7 @@ export default async function FriendsPage() {
             ))}
           </ul>
         ) : (
-          <Empty title="還沒有好友" hint="和交易過或聊得來的同好加個好友吧" />
+          <Empty title="還沒有好友" hint="和交易過或聊得來的同好加個好友吧" action={<Link href="/search" className="btn btn-sm">搜尋會員</Link>} />
         )}
       </section>
       {outgoing.length > 0 && (

@@ -46,6 +46,11 @@ export function UserLink({
 export function Empty({ title, hint, action }: { title: string; hint?: string; action?: ReactNode }) {
   return (
     <div className="rounded-xl border border-dashed border-line px-6 py-12 text-center">
+      <svg viewBox="0 0 48 48" className="mx-auto mb-3 size-12 text-line" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+        <ellipse cx="24" cy="28" rx="10" ry="13" />
+        <path d="M24 15v26M17 17l-5-6M31 17l5-6M14 26H8M34 26h6M15 35l-5 4M33 35l5 4" />
+        <circle cx="24" cy="12" r="4" />
+      </svg>
       <p className="font-medium">{title}</p>
       {hint && <p className="mt-1 text-sm text-sub">{hint}</p>}
       {action && <div className="mt-4">{action}</div>}

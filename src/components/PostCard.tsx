@@ -20,7 +20,7 @@ export type PostCardData = {
 export function PostCard({ post, cover }: { post: PostCardData; cover: string | null }) {
   const thumb = cover ?? (post.youtube_id ? `https://i.ytimg.com/vi/${post.youtube_id}/mqdefault.jpg` : null);
   return (
-    <article className="relative flex gap-3 border-b border-line py-4">
+    <article className="press relative flex gap-3 border-b border-line py-4">
       <div className="min-w-0 flex-1">
         <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
           <span className="chip chip-accent">{POST_CATEGORIES[post.category as keyof typeof POST_CATEGORIES]}</span>
@@ -43,14 +43,25 @@ export function PostCard({ post, cover }: { post: PostCardData; cover: string | 
           )}
           <span>·</span>
           <time dateTime={post.created_at}>{timeAgo(post.created_at)}</time>
-          <span className="ml-auto shrink-0">
-            ♡ {post.like_count}　💬 {post.comment_count}
+          <span className="ml-auto flex shrink-0 items-center gap-3 tabular-nums">
+            <span className="inline-flex items-center gap-1" aria-label={`${post.like_count} 個讚`}>
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                <path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" strokeLinejoin="round" />
+              </svg>
+              {post.like_count}
+            </span>
+            <span className="inline-flex items-center gap-1" aria-label={`${post.comment_count} 則留言`}>
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                <path d="M4 5h16v11H9l-5 4V5z" strokeLinejoin="round" />
+              </svg>
+              {post.comment_count}
+            </span>
           </span>
         </div>
       </div>
       {thumb && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={thumb} alt="" loading="lazy" className="size-20 shrink-0 rounded-lg bg-wash object-cover sm:size-24" />
+        <img src={thumb} alt="" loading="lazy" decoding="async" className="size-20 shrink-0 rounded-lg bg-wash object-cover sm:size-24" />
       )}
     </article>
   );

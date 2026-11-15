@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireSession } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { coverOf, LISTING_SELECT, mediaFor, POST_SELECT } from "@/lib/queries";
@@ -14,7 +15,7 @@ export default async function BookmarksPage({ searchParams }: { searchParams: Pr
   const supabase = await createClient();
   const { data: marks } = await supabase.from("bookmarks").select("target_id").eq("user_id", userId).eq("target_type", tab).order("created_at", { ascending: false }).limit(100);
   const ids = (marks ?? []).map((m) => m.target_id);
-  let body: React.ReactNode = <Empty title="還沒有收藏" />;
+  let body: React.ReactNode = <Empty title="還沒有收藏" hint="在文章或商品頁按「收藏」，之後可以在這裡找到" action={<Link href="/market" className="btn btn-sm">逛逛交易</Link>} />;
   if (ids.length && tab === "post") {
     const { data } = await supabase.from("posts").select(POST_SELECT).in("id", ids);
     const list = ((data ?? []) as unknown as PostCardData[]).sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));

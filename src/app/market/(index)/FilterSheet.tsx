@@ -1,9 +1,16 @@
 "use client";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 // 手機上從底部滑出的篩選面板；欄位仍屬於外層的 <Form>，按「套用」就是送出那個表單。
 export function FilterSheet({ count, children }: { count: number; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
+  // 套用後是站內換頁，元件不會卸載，要自己關起來
+  useEffect(() => {
+    const form = ref.current?.closest("form");
+    const close = () => ref.current?.close();
+    form?.addEventListener("submit", close);
+    return () => form?.removeEventListener("submit", close);
+  }, []);
   return (
     <>
       <button type="button" className={`btn shrink-0 px-3 ${count ? "border-accent/40 bg-accent-wash text-accent" : ""}`} onClick={() => ref.current?.showModal()}>

@@ -124,7 +124,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </Link>
           )}
           {(mine || mod) && (
-            <ConfirmForm action={deletePost} message="確定刪除這篇文章？刪除後無法復原。">
+            <ConfirmForm action={deletePost} message="確定刪除這篇文章？刪除後無法復原。" confirmLabel="刪除">
               <input type="hidden" name="id" value={postId} />
               <button className="text-xs text-sub hover:text-danger">刪除</button>
             </ConfirmForm>

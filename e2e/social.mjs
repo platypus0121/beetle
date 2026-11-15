@@ -1,4 +1,4 @@
-import { BASE, cleanup, launch, newUser, shot, sql, step, testImage } from "./helpers.mjs";
+import { BASE, cleanup, launch, newUser, shot, sql, step, testImage, confirmIn } from "./helpers.mjs";
 
 cleanup();
 const browser = await launch();
@@ -67,6 +67,7 @@ try {
   step("設定「只接受好友私訊」後，非好友被擋");
   await a.page.goto(`${BASE}/u/${b.id}`);
   await a.page.getByRole("button", { name: "封鎖", exact: true }).click();
+  await confirmIn(a.page, "封鎖");
   await see(a.page, "你已封鎖這位會員");
   await b.page.getByLabel("訊息").fill("在嗎");
   await b.page.getByRole("button", { name: "傳送", exact: true }).click();
