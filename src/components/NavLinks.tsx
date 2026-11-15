@@ -46,7 +46,7 @@ export function BottomNav({ loggedIn }: { loggedIn: boolean }) {
     { href: loggedIn ? "/me" : "/login", label: loggedIn ? "我的" : "登入", icon: ICONS.me, active: /^\/(me|settings|breeding|friends)/.test(path) },
   ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] sm:hidden">
+    <nav className="bottom-nav fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] sm:hidden">
       <ul className="grid grid-cols-5">
         {items.map((it) => (
           <li key={it.href}>

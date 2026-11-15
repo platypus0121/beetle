@@ -161,3 +161,7 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+body[data-sticky-cta] .bottom-nav {
+  display: none;
+}

@@ -15,6 +15,8 @@ import { toggleBookmark } from "@/app/posts/actions";
 import { setListingStatus } from "../actions";
 import { AuctionPanel, OrderPanel, type AuctionState, type BidRow } from "./BuyPanels";
 import { DeleteListing } from "./DeleteListing";
+import { StickyBuyBar } from "./StickyBuyBar";
+import { endsIn } from "@/components/ListingCard";
 
 async function load(id: number) {
   const supabase = await createClient();
@@ -91,6 +93,21 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   }
   specs.push(["寄送方式", l.shipping_methods.map((s) => SHIPPING[s as keyof typeof SHIPPING]).join("、")]);
   if (l.city) specs.push(["所在地", l.city]);
+  // 規格用兩欄緊湊排列；學名與寄送方式較長佔整列，半寬格子是奇數時最後一格補滿
+  const WIDE = new Set(["學名", "寄送方式"]);
+  const halves = specs.filter(([k]) => !WIDE.has(k));
+  const lastHalf = halves.length % 2 ? halves[halves.length - 1][0] : null;
+
+  const activeOrder = myOrder?.data && !["completed", "cancelled"].includes(myOrder.data.status) ? myOrder.data : null;
+  const auctionOpen = !!auction && auction.status === "open" && new Date(auction.ends_at).getTime() > Date.now();
+  let cta: { label: string; href?: string } | null = null;
+  if (!mine) {
+    if (activeOrder) cta = { label: "查看交易單", href: `/orders/${activeOrder.id}` };
+    else if (l.status === "active" && !blockReason && (auction ? auctionOpen : true))
+      cta = session ? { label: auction ? "出價" : "我要購買" } : { label: auction ? "登入出價" : "登入購買", href: `/login?next=/market/${listingId}` };
+  }
+  const barPrice = auction ? price(auction.current_price) : price(l.price);
+  const barSub = auction ? `${auction.bid_count} 次出價・${endsIn(auction.ends_at)}` : l.city ? `${l.city}・${l.shipping_methods.length} 種寄送方式` : undefined;
 
   return (
     <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-[1fr_340px]">
@@ -104,11 +121,11 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
         </div>
         <h1 className="mt-2 text-xl leading-snug font-semibold">{l.title}</h1>
         {!auction && <p className="mt-1 text-2xl font-semibold text-accent">{price(l.price)}</p>}
-        <dl className="mt-4 divide-y divide-line border-y border-line text-sm">
+        <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line text-sm">
           {specs.map(([k, v]) => (
-            <div key={k} className="flex gap-3 py-2">
-              <dt className="w-20 shrink-0 text-sub">{k}</dt>
-              <dd className="min-w-0 flex-1">{v}</dd>
+            <div key={k} className={`min-w-0 bg-white px-3 py-2 ${WIDE.has(k) || k === lastHalf ? "col-span-2" : ""}`}>
+              <dt className="text-xs text-sub">{k}</dt>
+              <dd className="mt-0.5 break-words">{v}</dd>
             </div>
           ))}
         </dl>
@@ -117,7 +134,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       </div>
 
       <aside className="space-y-4">
-        <div className="card p-4">
+        <div id="buy" className="card scroll-mt-20 p-4">
           {mine ? (
             <div className="space-y-3">
               <p className="text-sm text-sub">這是你的商品。</p>
@@ -237,6 +254,15 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </aside>
+      {cta && (
+        <StickyBuyBar
+          priceText={barPrice}
+          sub={barSub}
+          label={cta.label}
+          href={cta.href}
+          dmHref={session && !mine ? `/messages/new?to=${l.seller.id}&listing=${listingId}` : undefined}
+        />
+      )}
     </div>
   );
 }

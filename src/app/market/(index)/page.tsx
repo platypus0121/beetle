@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Form from "next/form";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { coverOf, LISTING_SELECT, mediaFor } from "@/lib/queries";
@@ -6,6 +7,7 @@ import { CITIES, FAMILY_GROUPS, SEXES, SHIPPING, STAGES } from "@/lib/constants"
 import { price, timeAgo } from "@/lib/format";
 import { ListingCard, type ListingCardData } from "@/components/ListingCard";
 import { Empty, PageHeader, Pager, Tabs } from "@/components/ui";
+import { AutoSubmitSelect, FilterSheet } from "./FilterSheet";
 
 export const metadata: Metadata = {
   title: "交易",
@@ -137,55 +139,79 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
   const media = await mediaFor("listing", list.map((l) => l.id));
   let speciesName: string | null = null;
   if (f.species) speciesName = (await supabase.from("species").select("common_name").eq("id", Number(f.species)).maybeSingle()).data?.common_name ?? null;
+  // 目前套用的條件，以可點掉的小標籤顯示
+  const chips: { key: string; label: string; remove: Record<string, null> }[] = [];
+  const chip = (key: string, label: string, remove: string[] = [key]) => chips.push({ key, label, remove: Object.fromEntries(remove.map((k) => [k, null])) });
+  if (f.q) chip("q", `「${f.q}」`);
+  if (speciesName) chip("species", speciesName);
+  if (f.group) chip("group", FAMILY_GROUPS[f.group as keyof typeof FAMILY_GROUPS]);
+  if (f.stage) chip("stage", STAGES[f.stage as keyof typeof STAGES]);
+  if (f.sex) chip("sex", SEXES[f.sex as keyof typeof SEXES]);
+  if (f.ship) chip("ship", SHIPPING[f.ship as keyof typeof SHIPPING]);
+  if (f.city) chip("city", f.city);
+  if (f.min || f.max) chip("price", `${f.min ? price(Number(f.min)) : ""}～${f.max ? price(Number(f.max)) : ""}`, ["min", "max"]);
 
   return (
     <div>
       {header}
-      <details className="mb-4 rounded-xl border border-line" open={active > 0}>
-        <summary className="flex min-h-11 cursor-pointer items-center justify-between px-3.5 text-sm font-medium">
-          篩選與排序{active > 0 && `（${active}）`}
-          <span className="text-faint">▾</span>
-        </summary>
-        <form className="grid grid-cols-2 gap-2.5 border-t border-line p-3.5 sm:grid-cols-4">
-          {type !== "all" && <input type="hidden" name="type" value={type} />}
-          {f.species && <input type="hidden" name="species" value={f.species} />}
-          <input name="q" defaultValue={f.q} placeholder="關鍵字、學名、產地" className="input col-span-2" aria-label="關鍵字" />
-          <Select name="group" value={f.group} label="分類" options={FAMILY_GROUPS} />
-          <Select name="stage" value={f.stage} label="類型" options={STAGES} />
-          <Select name="sex" value={f.sex} label="性別" options={SEXES} />
-          <Select name="ship" value={f.ship} label="寄送方式" options={SHIPPING} />
-          <select name="city" defaultValue={f.city} className="input" aria-label="縣市">
-            <option value="">所有縣市</option>
-            {CITIES.map((c) => (
-              <option key={c}>{c}</option>
+      <Form action="/market" className="mb-3">
+        {type !== "all" && <input type="hidden" name="type" value={type} />}
+        {f.species && <input type="hidden" name="species" value={f.species} />}
+        <div className="flex gap-2">
+          <input name="q" type="search" defaultValue={f.q} placeholder="搜尋商品、學名、產地" enterKeyHint="search" className="input min-w-0 flex-1" aria-label="關鍵字" />
+          <FilterSheet count={chips.filter((c) => c.key !== "q" && c.key !== "species").length}>
+            <Select name="group" value={f.group} label="分類" options={FAMILY_GROUPS} />
+            <Select name="stage" value={f.stage} label="類型" options={STAGES} />
+            <Select name="sex" value={f.sex} label="性別" options={SEXES} />
+            <Select name="ship" value={f.ship} label="寄送方式" options={SHIPPING} />
+            <select name="city" defaultValue={f.city} className="input col-span-2" aria-label="縣市">
+              <option value="">所有縣市</option>
+              {CITIES.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+            <input name="min" defaultValue={f.min} inputMode="numeric" pattern="[0-9]*" placeholder="最低價" className="input" aria-label="最低價" />
+            <input name="max" defaultValue={f.max} inputMode="numeric" pattern="[0-9]*" placeholder="最高價" className="input" aria-label="最高價" />
+            <div className="sticky bottom-0 col-span-2 -mx-4 -mb-4 flex gap-2 border-t border-line bg-white px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+              <Link href={type === "all" ? "/market" : `/market?type=${type}`} className="btn flex-1">
+                清除全部
+              </Link>
+              <button className="btn btn-primary flex-[2]">套用</button>
+            </div>
+          </FilterSheet>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <div className="-my-1 flex min-w-0 flex-1 gap-1.5 overflow-x-auto py-1 [scrollbar-width:none]">
+            {chips.map((c) => (
+              <Link key={c.key} href={qs({ ...c.remove, page: null })} className="chip chip-accent min-h-8 shrink-0 px-3" aria-label={`移除條件：${c.label}`}>
+                {c.label} <span aria-hidden>✕</span>
+              </Link>
             ))}
-          </select>
-          <select name="sort" defaultValue={f.sort} className="input" aria-label="排序">
+          </div>
+          <AutoSubmitSelect name="sort" defaultValue={f.sort} className="input min-h-9 w-auto shrink-0 py-0 text-sm" aria-label="排序">
             <option value="">最新上架</option>
             <option value="price_asc">價格低到高</option>
             <option value="price_desc">價格高到低</option>
             {type === "auction" && <option value="ending">即將結標</option>}
-          </select>
-          <input name="min" defaultValue={f.min} inputMode="numeric" placeholder="最低價" className="input" aria-label="最低價" />
-          <input name="max" defaultValue={f.max} inputMode="numeric" placeholder="最高價" className="input" aria-label="最高價" />
-          <div className="col-span-2 flex gap-2 sm:col-span-4">
-            <button className="btn btn-primary btn-sm flex-1">套用</button>
-            <Link href={type === "all" ? "/market" : `/market?type=${type}`} className="btn btn-sm">
-              清除
-            </Link>
-          </div>
-        </form>
-      </details>
-      {speciesName && (
-        <p className="mb-3 text-sm">
-          物種：<span className="chip chip-accent">{speciesName}</span>{" "}
-          <Link href={qs({ species: null })} className="text-xs text-sub underline">
-            取消
-          </Link>
-        </p>
-      )}
+          </AutoSubmitSelect>
+        </div>
+      </Form>
       {list.length === 0 ? (
-        <Empty title="沒有符合的商品" hint={active ? "試著放寬篩選條件" : "成為第一個上架的人"} />
+        <Empty
+          title="沒有符合的商品"
+          hint={active ? "試著放寬篩選條件" : "成為第一個上架的人"}
+          action={
+            active ? (
+              <Link href={type === "all" ? "/market" : `/market?type=${type}`} className="btn btn-sm">
+                清除篩選
+              </Link>
+            ) : (
+              <Link href="/market/new" className="btn btn-primary btn-sm">
+                上架商品
+              </Link>
+            )
+          }
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {list.map((l) => (

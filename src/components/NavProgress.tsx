@@ -29,8 +29,17 @@ export function NavProgress() {
       setWidth(8);
       timer.current = setInterval(() => setWidth((w) => (w < 85 ? w + (90 - w) * 0.08 : w)), 200);
     };
+    // 篩選、搜尋這類 GET 表單送出也算換頁
+    const onSubmit = (e: SubmitEvent) => {
+      const form = e.target as HTMLFormElement;
+      if (!e.defaultPrevented && form.method === "get") start();
+    };
     document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    document.addEventListener("submit", onSubmit);
+    return () => {
+      document.removeEventListener("click", onClick);
+      document.removeEventListener("submit", onSubmit);
+    };
   }, []);
 
   useEffect(() => {

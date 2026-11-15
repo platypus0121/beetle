@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { FormError, Submit } from "@/components/Submit";
 import { SHIPPING } from "@/lib/constants";
 import { formatDateTime, price } from "@/lib/format";
+import { toast } from "@/components/Toaster";
 import { buyNow, cancelAuction, createOrder, placeBid } from "../actions";
 
 function Agree() {
@@ -107,6 +108,9 @@ export function AuctionPanel({
   const cd = useCountdown(a.ends_at);
 
   useEffect(() => setA(initial), [initial]);
+  useEffect(() => {
+    if (bidState?.ok) toast(bidState.data.leading ? "出價成功，你目前領先" : "出價已送出，但目前被超過", bidState.data.leading ? "ok" : "error");
+  }, [bidState]);
   // 即時更新價格與結標時間
   useEffect(() => {
     const supabase = createClient();
