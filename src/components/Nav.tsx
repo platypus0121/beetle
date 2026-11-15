@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { SITE_NAME } from "@/lib/constants";
 import { Avatar } from "./ui";
-import { BottomNav, TopLinks } from "./NavLinks";
+import { BackButton, BottomNav, TopLinks } from "./NavLinks";
 
 export async function Nav() {
   const session = await getSession();
@@ -17,6 +17,7 @@ export async function Nav() {
     <>
       <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
+          <BackButton />
           <Link href="/" className="flex items-center gap-2 text-[17px] font-semibold tracking-tight text-ink">
             <span aria-hidden className="inline-block size-2.5 rounded-full bg-accent" />
             {SITE_NAME}

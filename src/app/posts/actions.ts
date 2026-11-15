@@ -3,7 +3,7 @@ import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { commentSchema, firstError, postSchema } from "@/lib/validation";
+import { commentSchema, firstError, firstField, postSchema } from "@/lib/validation";
 import { attachImages, attachVideo, removeMediaByIds, removeMediaOf } from "@/lib/media";
 import { youtubeId } from "@/lib/format";
 import { dbError, fail, type ActionResult } from "@/lib/result";
@@ -31,10 +31,10 @@ export async function savePost(_: unknown, form: FormData): Promise<ActionResult
   const { supabase, userId } = await currentUser();
   if (!userId) return fail("請先登入");
   const parsed = parsePost(form);
-  if (!parsed.success) return fail(firstError(parsed.error));
+  if (!parsed.success) return fail(firstError(parsed.error), firstField(parsed.error));
   const v = parsed.data;
   const yt = v.youtube ? youtubeId(v.youtube) : null;
-  if (v.youtube && !yt) return fail("YouTube 連結格式不正確");
+  if (v.youtube && !yt) return fail("YouTube 連結格式不正確", "youtube");
   const editId = Number(form.get("id")) || null;
   const row = { category: v.category, species_id: v.species_id, title: v.title, body: v.body, youtube_id: yt, status: v.status };
 
@@ -101,7 +101,7 @@ export async function addComment(_: unknown, form: FormData): Promise<ActionResu
     body: form.get("body"),
     media_ids: form.getAll("media_ids"),
   });
-  if (!parsed.success) return fail(firstError(parsed.error));
+  if (!parsed.success) return fail(firstError(parsed.error), firstField(parsed.error));
   const v = parsed.data;
   const { data, error } = await supabase
     .from("comments")

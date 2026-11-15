@@ -1,6 +1,6 @@
 export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T }))
-  | { ok: false; error: string };
+  | { ok: false; error: string; field?: string };
 
 // 把資料庫錯誤轉成給使用者看的訊息。資料庫函式自己丟出的中文訊息（P0001）直接顯示。
 export function dbError(e: { code?: string; message?: string } | null | undefined): string {
@@ -14,4 +14,4 @@ export function dbError(e: { code?: string; message?: string } | null | undefine
   return "發生錯誤，請稍後再試";
 }
 
-export const fail = (error: string) => ({ ok: false as const, error });
+export const fail = (error: string, field?: string) => ({ ok: false as const, error, ...(field ? { field } : {}) });

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 const LINKS = [
   { href: "/", label: "討論", match: /^\/($|posts)/ },
@@ -37,7 +38,8 @@ const ICONS = {
 
 export function BottomNav({ loggedIn }: { loggedIn: boolean }) {
   const path = usePathname();
-  if (/^\/(messages\/\d+|login|welcome)/.test(path)) return null;
+  // 私訊對話、登入流程、各種編輯表單（底部有固定的送出鈕、鍵盤也會頂上來）不顯示底部導覽
+  if (/^\/(messages\/\d+|login|welcome|new$|posts\/new|posts\/\d+\/edit|market\/new|market\/\d+\/edit|market\/wanted\/new|breeding\/new|breeding\/\d+\/edit|orders\/\d+\/(dispute|doa|review))/.test(path)) return null;
   const items = [
     { href: "/", label: "討論", icon: ICONS.home, active: /^\/($|posts\/\d)/.test(path) },
     { href: "/market", label: "交易", icon: ICONS.market, active: /^\/(market|orders)/.test(path) },
@@ -52,6 +54,14 @@ export function BottomNav({ loggedIn }: { loggedIn: boolean }) {
           <li key={it.href}>
             <Link
               href={it.href}
+              onClick={(e) => {
+                // 已經在這個分頁的首頁再點一次：捲回頂端
+                if (it.href === path) {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+              aria-current={it.active ? "page" : undefined}
               className={`flex h-14 flex-col items-center justify-center gap-0.5 text-[11px] ${it.active ? "text-accent" : "text-sub"}`}
             >
               {it.primary ? (
@@ -77,5 +87,33 @@ function Svg({ d }: { d: string }) {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="size-[22px]" aria-hidden>
       <path d={d} />
     </svg>
+  );
+}
+
+// 各分頁的首頁不需要返回鍵
+const ROOTS = /^\/(market|species|me|breeding|shops|login|welcome|search|notifications|messages|friends|orders|new)?$/;
+let navigatedInApp = false;
+
+/** 手機標題列左側的「‹」：站內有上一頁就返回，直接打開網址的就回到上一層。 */
+export function BackButton() {
+  const path = usePathname();
+  const router = useRouter();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) first.current = false;
+    else navigatedInApp = true;
+  }, [path]);
+  if (ROOTS.test(path)) return null;
+  const up = path.replace(/\/[^/]+$/, "") || "/";
+  const parent = /^\/(posts|u)$/.test(up) ? "/" : up === "/market/wanted" ? "/market?type=wanted" : up;
+  return (
+    <button
+      type="button"
+      aria-label="返回"
+      onClick={() => (navigatedInApp ? router.back() : router.push(parent))}
+      className="-ml-2 flex size-10 items-center justify-center rounded-full text-ink hover:bg-wash sm:hidden"
+    >
+      <Svg d="M15 5l-7 7 7 7" />
+    </button>
   );
 }

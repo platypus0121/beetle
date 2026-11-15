@@ -180,7 +180,7 @@ export function Thread({
           maxLength={2000}
           placeholder="輸入訊息"
           aria-label="訊息"
-          className="input max-h-32 flex-1"
+          className="input field-sizing-content max-h-32 min-h-11 flex-1"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) {
               e.preventDefault();

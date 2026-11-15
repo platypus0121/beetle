@@ -1,4 +1,5 @@
 "use client";
+import { SmartForm } from "@/components/SmartForm";
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { SpeciesPicker, type SpeciesOption } from "@/components/SpeciesPicker";
@@ -10,7 +11,7 @@ export function WantedForm({ defaultCity }: { defaultCity: string | null }) {
   const [state, action] = useActionState(saveWanted, null);
   const [species, setSpecies] = useState<SpeciesOption | null>(null);
   return (
-    <form action={action} className="space-y-4">
+    <SmartForm action={action} state={state} draftKey={"wanted"} className="space-y-4">
       <FormError state={state} />
       <div>
         <span className="label">物種（選填）</span>
@@ -60,6 +61,6 @@ export function WantedForm({ defaultCity }: { defaultCity: string | null }) {
       <Submit className="btn btn-primary w-full" disabled={!!species?.is_protected}>
         刊登
       </Submit>
-    </form>
+    </SmartForm>
   );
 }

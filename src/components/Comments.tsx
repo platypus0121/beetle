@@ -1,6 +1,7 @@
 "use client";
 import { ConfirmForm } from "./ConfirmForm";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { SmartForm } from "./SmartForm";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { addComment, deleteComment, editComment, toggleCommentLike } from "@/app/posts/actions";
 import { LIMITS } from "@/lib/constants";
@@ -29,18 +30,16 @@ export type CommentData = {
 export function CommentForm({ postId, parentId, onDone, autoFocus }: { postId: number; parentId?: number; onDone?: () => void; autoFocus?: boolean }) {
   const [state, action] = useActionState(addComment, null);
   const [nonce, setNonce] = useState(0);
-  const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state?.ok) {
       toast(parentId ? "回覆已送出" : "留言已送出");
-      ref.current?.reset();
       setNonce((n) => n + 1);
       onDone?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
   return (
-    <form ref={ref} action={action} className="space-y-2">
+    <SmartForm action={action} state={state} className="space-y-2">
       <input type="hidden" name="post_id" value={postId} />
       {parentId && <input type="hidden" name="parent_id" value={parentId} />}
       <FormError state={state} />
@@ -51,7 +50,7 @@ export function CommentForm({ postId, parentId, onDone, autoFocus }: { postId: n
         </div>
         <Submit className="btn btn-primary btn-sm">{parentId ? "回覆" : "留言"}</Submit>
       </div>
-    </form>
+    </SmartForm>
   );
 }
 

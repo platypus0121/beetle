@@ -5,6 +5,7 @@ import { ImageUploader, type UploadedImage } from "@/components/ImageUploader";
 import { PrivateImageField } from "@/components/PrivateImageField";
 import { SpeciesPicker, type SpeciesOption } from "@/components/SpeciesPicker";
 import { FormError, Submit } from "@/components/Submit";
+import { CharCount, FieldError, SmartForm } from "@/components/SmartForm";
 import { VideoField } from "@/components/VideoField";
 import { CITIES, LIMITS, LIVE_STAGES, SEXES, SHIPPING, STAGES } from "@/lib/constants";
 import { saveListing } from "./actions";
@@ -47,7 +48,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
   const auction = saleType === "auction";
 
   return (
-    <form action={action} className="space-y-5">
+    <SmartForm action={action} state={state} draftKey={editing ? undefined : "listing"} className="space-y-5">
       {editing && <input type="hidden" name="id" value={initial!.id} />}
       <input type="hidden" name="kept_count" value={kept.length} />
       {removed.map((id) => (
@@ -90,9 +91,10 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
         </select>
       </div>
 
-      <div>
+      <div data-field="species_id">
         <span className="label">物種{supply && "（用品可不填）"}</span>
         <SpeciesPicker initial={species} onSelect={setSpecies} />
+        <FieldError name="species_id" />
         {blocked && (
           <p role="alert" className="notice notice-danger mt-2">
             「{species!.common_name}」是保育類野生動物，依《野生動物保育法》不得買賣，本站無法上架（含活體、標本與卵）。
@@ -101,10 +103,14 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
       </div>
 
       <div>
-        <label className="label" htmlFor="title">
-          標題
-        </label>
+        <div className="flex items-baseline justify-between">
+          <label className="label" htmlFor="title">
+            標題
+          </label>
+          <CharCount htmlFor="title" max={80} />
+        </div>
         <input id="title" name="title" required minLength={2} maxLength={80} defaultValue={initial?.title} placeholder="例：DHH 長戟大兜蟲 ♂145mm CBF2" className="input" />
+        <FieldError name="title" />
       </div>
 
       {!supply && (
@@ -126,6 +132,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
               尺寸（mm）
             </label>
             <input id="size_mm" name="size_mm" type="number" inputMode="decimal" step="0.1" min="1" max="249" defaultValue={initial?.size_mm ?? ""} className="input" />
+            <FieldError name="size_mm" />
           </div>
           <div>
             <label className="label" htmlFor="generation">
@@ -165,6 +172,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
             {auction ? "起標價" : "價格"}（NT$）
           </label>
           <input id="price" name="price" type="number" inputMode="numeric" required min="1" max="10000000" step="1" defaultValue={initial?.price ?? ""} className="input" />
+          <FieldError name="price" />
         </div>
         {auction && !editing && (
           <>
@@ -173,6 +181,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
                 每次最低加價
               </label>
               <input id="min_increment" name="min_increment" type="number" inputMode="numeric" required min="1" step="1" defaultValue={50} className="input" />
+              <FieldError name="min_increment" />
             </div>
             <div>
               <label className="label" htmlFor="auction_days">
@@ -203,7 +212,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
         )}
       </div>
 
-      <div>
+      <div data-field="shipping_methods">
         <span className="label">寄送方式</span>
         <div className="flex flex-wrap gap-2">
           {Object.entries(SHIPPING).map(([k, v]) => (
@@ -216,6 +225,7 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
           ))}
         </div>
         {live && <p className="hint">活體建議選擇隔日到的方式，並避開假日前寄出。</p>}
+        <FieldError name="shipping_methods" />
       </div>
 
       <div>
@@ -234,7 +244,8 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
         <label className="label" htmlFor="description">
           說明
         </label>
-        <textarea id="description" name="description" rows={5} maxLength={5000} defaultValue={initial?.description} placeholder="個體狀況、瑕疵、飼育環境、可否面交…" className="input" />
+        <textarea id="description" name="description" rows={5} maxLength={5000} defaultValue={initial?.description} placeholder="個體狀況、瑕疵、飼育環境、可否面交…" className="input field-sizing-content min-h-32" />
+        <FieldError name="description" />
       </div>
 
       <div>
@@ -285,6 +296,6 @@ export function ListingForm({ initial, videoEnabled, defaultCity }: { initial?: 
         {editing ? "儲存" : auction ? "開始拍賣" : "上架"}
       </Submit>
       {needProof && !proof && <p className="text-center text-xs text-warn">請先上傳飼育證明</p>}
-    </form>
+    </SmartForm>
   );
 }

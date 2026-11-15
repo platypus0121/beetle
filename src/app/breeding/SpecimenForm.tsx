@@ -1,4 +1,5 @@
 "use client";
+import { SmartForm } from "@/components/SmartForm";
 import { useActionState, useState } from "react";
 import { ImageUploader, type UploadedImage } from "@/components/ImageUploader";
 import { SpeciesPicker, type SpeciesOption } from "@/components/SpeciesPicker";
@@ -32,7 +33,7 @@ export function SpecimenForm({ initial, parents }: { initial?: SpecimenInitial; 
   const [removed, setRemoved] = useState<number[]>([]);
   const candidates = parents.filter((p) => p.id !== initial?.id);
   return (
-    <form action={action} className="space-y-4">
+    <SmartForm action={action} state={state} draftKey={initial ? undefined : "specimen"} className="space-y-4">
       {initial && <input type="hidden" name="id" value={initial.id} />}
       <input type="hidden" name="kept_count" value={kept.length} />
       {removed.map((id) => (
@@ -194,6 +195,6 @@ export function SpecimenForm({ initial, parents }: { initial?: SpecimenInitial; 
         </div>
       </div>
       <Submit className="btn btn-primary w-full">{initial ? "儲存" : "建立個體"}</Submit>
-    </form>
+    </SmartForm>
   );
 }

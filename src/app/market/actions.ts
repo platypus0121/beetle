@@ -3,7 +3,7 @@ import { setFlash } from "@/lib/flash";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { firstError, listingSchema } from "@/lib/validation";
+import { firstError, firstField, listingSchema } from "@/lib/validation";
 import { attachImages, attachVideo, removeMediaByIds, removeMediaOf } from "@/lib/media";
 import { CITIES } from "@/lib/constants";
 import { dbError, fail, type ActionResult } from "@/lib/result";
@@ -44,7 +44,10 @@ export async function saveListing(_: unknown, form: FormData): Promise<ActionRes
     buy_now_price: form.get("buy_now_price"),
     reserve_price: form.get("reserve_price"),
   });
-  if (!parsed.success) return fail(firstError(parsed.error));
+  if (!parsed.success) {
+    const field = firstField(parsed.error);
+    return fail(firstError(parsed.error), field === "ends_at" ? "auction_days" : field);
+  }
   const v = parsed.data;
   if (v.city && !CITIES.includes(v.city)) return fail("縣市不正確");
   const editId = Number(form.get("id")) || null;

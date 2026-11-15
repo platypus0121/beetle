@@ -4,6 +4,7 @@ import { ImageUploader, type UploadedImage } from "@/components/ImageUploader";
 import { SpeciesPicker, type SpeciesOption } from "@/components/SpeciesPicker";
 import { VideoField } from "@/components/VideoField";
 import { FormError, Submit } from "@/components/Submit";
+import { CharCount, FieldError, SmartForm } from "@/components/SmartForm";
 import { LIMITS, POST_CATEGORIES } from "@/lib/constants";
 import { savePost } from "./actions";
 import { useState } from "react";
@@ -24,7 +25,7 @@ export function PostForm({ initial, videoEnabled, presetSpecies }: { initial?: P
   const [kept, setKept] = useState<UploadedImage[]>(initial?.images ?? []);
   const [removed, setRemoved] = useState<number[]>([]);
   return (
-    <form action={action} className="space-y-5">
+    <SmartForm action={action} state={state} draftKey={initial ? undefined : "post"} className="space-y-5">
       {initial && <input type="hidden" name="id" value={initial.id} />}
       <input type="hidden" name="kept_count" value={kept.length} />
       {removed.map((id) => (
@@ -44,22 +45,31 @@ export function PostForm({ initial, videoEnabled, presetSpecies }: { initial?: P
           ))}
         </div>
       </div>
-      <div>
+      <div data-field="species_id">
         <span className="label">物種（選填）</span>
         <SpeciesPicker initial={initial?.species ?? presetSpecies ?? null} />
+        <FieldError name="species_id" />
         <p className="hint">綁定物種後，其他人可以從物種頁找到這篇文章</p>
       </div>
       <div>
-        <label className="label" htmlFor="title">
-          標題
-        </label>
-        <input id="title" name="title" required minLength={2} maxLength={80} defaultValue={initial?.title} className="input" />
+        <div className="flex items-baseline justify-between">
+          <label className="label" htmlFor="title">
+            標題
+          </label>
+          <CharCount htmlFor="title" max={80} />
+        </div>
+        <input id="title" name="title" required minLength={2} maxLength={80} defaultValue={initial?.title} placeholder="例：長戟大兜蟲 3 齡幼蟲換瓶紀錄" className="input" />
+        <FieldError name="title" />
       </div>
       <div>
-        <label className="label" htmlFor="body">
-          內容
-        </label>
-        <textarea id="body" name="body" required maxLength={10000} rows={8} defaultValue={initial?.body} className="input" />
+        <div className="flex items-baseline justify-between">
+          <label className="label" htmlFor="body">
+            內容
+          </label>
+          <CharCount htmlFor="body" max={10000} />
+        </div>
+        <textarea id="body" name="body" required maxLength={10000} rows={8} defaultValue={initial?.body} placeholder="分享經驗、描述問題，網址會自動變成連結" className="input field-sizing-content min-h-48" />
+        <FieldError name="body" />
       </div>
       <div>
         <span className="label">照片</span>
@@ -104,13 +114,14 @@ export function PostForm({ initial, videoEnabled, presetSpecies }: { initial?: P
           defaultValue={initial?.youtube_id ? `https://youtu.be/${initial.youtube_id}` : ""}
           className="input"
         />
+        <FieldError name="youtube" />
       </div>
-      <div className="flex gap-2">
+      <div className="sticky bottom-0 z-10 -mx-4 flex gap-2 border-t border-line bg-white/95 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0">
         <Submit className="btn btn-primary flex-1">{initial ? "儲存" : "發布"}</Submit>
         <Submit className="btn" name="intent" value="draft">
           存成草稿
         </Submit>
       </div>
-    </form>
+    </SmartForm>
   );
 }

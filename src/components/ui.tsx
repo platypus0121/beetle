@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { mediaUrl } from "@/lib/format";
+import { AutoPager } from "./AutoPager";
 
 export function Avatar({ path, name, size = 36 }: { path?: string | null; name: string; size?: number }) {
   const url = mediaUrl(path, "avatars");
@@ -96,11 +97,5 @@ export function SpeciesName({ s }: { s: { common_name: string; scientific_name: 
 
 export function Pager({ href, hasMore }: { href: string; hasMore: boolean }) {
   if (!hasMore) return null;
-  return (
-    <div className="mt-6 text-center">
-      <Link href={href} className="btn" scroll={false}>
-        載入更多
-      </Link>
-    </div>
-  );
+  return <AutoPager key={href} href={href} />;
 }

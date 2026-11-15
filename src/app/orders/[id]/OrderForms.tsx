@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
+import { SmartForm } from "@/components/SmartForm";
 import { useConfirm } from "@/components/ConfirmDialog";
 import { toast } from "@/components/Toaster";
 import { PrivateImageField } from "@/components/PrivateImageField";
@@ -66,13 +67,15 @@ export function PaymentInfoForm({
   allowMeetup: boolean;
 }) {
   const [state, action] = useActionState(setPaymentInfo, null);
+  useEffect(() => {
+    if (state?.ok) toast("收款資訊已更新，買家會收到通知");
+  }, [state]);
   const [method, setMethod] = useState(current?.method ?? "transfer");
   const [v, setV] = useState({ bank: current?.bank_code ?? "", acct: current?.account_no ?? "", name: current?.account_name ?? "" });
   return (
-    <form action={action} className="space-y-3">
+    <SmartForm action={action} state={state} className="space-y-3">
       <input type="hidden" name="order_id" value={orderId} />
       <FormError state={state} />
-      {state?.ok && <p className="notice">收款資訊已更新，買家會收到通知。</p>}
       <div className="flex gap-2">
         {[
           ["transfer", "銀行轉帳"],
@@ -122,14 +125,17 @@ export function PaymentInfoForm({
       )}
       <Submit className="btn btn-primary w-full">{current ? "更新收款資訊" : "送出收款資訊"}</Submit>
       <p className="text-xs text-sub">收款資訊只有這筆交易的買家和站方看得到，並會記錄在時間軸。</p>
-    </form>
+    </SmartForm>
   );
 }
 
 export function ReportPaymentForm({ orderId, amount, method }: { orderId: number; amount: number; method: string }) {
   const [state, action] = useActionState(orderAction, null);
+  useEffect(() => {
+    if (state?.ok) toast("已回報付款，等待賣家確認");
+  }, [state]);
   return (
-    <form action={action} className="space-y-3">
+    <SmartForm action={action} state={state} className="space-y-3">
       <input type="hidden" name="order_id" value={orderId} />
       <input type="hidden" name="action" value="report_payment" />
       <FormError state={state} />
@@ -162,20 +168,23 @@ export function ReportPaymentForm({ orderId, amount, method }: { orderId: number
         </div>
       )}
       <Submit className="btn btn-primary w-full">{method === "meetup" ? "回報已面交付款" : "回報已付款"}</Submit>
-    </form>
+    </SmartForm>
   );
 }
 
 export function ShipForm({ orderId, meetup }: { orderId: number; meetup: boolean }) {
   const [state, action] = useActionState(orderAction, null);
+  useEffect(() => {
+    if (state?.ok) toast(meetup ? "已標記完成面交" : "已標記出貨，買家會收到通知");
+  }, [state, meetup]);
   return (
-    <form action={action} className="space-y-3">
+    <SmartForm action={action} state={state} className="space-y-3">
       <input type="hidden" name="order_id" value={orderId} />
       <input type="hidden" name="action" value="ship" />
       <FormError state={state} />
       {!meetup && <input name="tracking_no" maxLength={40} placeholder="物流單號（選填，建議填寫）" aria-label="物流單號" className="input" />}
       <Submit className="btn btn-primary w-full">{meetup ? "已當面交付" : "已出貨"}</Submit>
-    </form>
+    </SmartForm>
   );
 }
 

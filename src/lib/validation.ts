@@ -94,3 +94,9 @@ export const listingSchema = z
 export function firstError(e: z.ZodError): string {
   return e.issues[0]?.message ?? "輸入內容有誤";
 }
+
+/** 第一個錯誤的欄位名稱，讓表單能捲過去並在欄位旁顯示。 */
+export function firstField(e: z.ZodError): string | undefined {
+  const k = e.issues[0]?.path[0];
+  return typeof k === "string" ? k : undefined;
+}
