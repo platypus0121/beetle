@@ -33,10 +33,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const cover = (await mediaFor("post", [post.id])).get(post.id)?.find((m) => m.kind === "image")?.url;
   return {
     title: post.title,
-    description: post.body.slice(0, 120),
+    description: post.body.replace(/\s+/g, " ").slice(0, 120),
     alternates: { canonical: `/posts/${post.id}` },
     // 沒有照片時用站方預設分享圖，否則分享到 FB／LINE 會沒有圖
-    openGraph: { title: post.title, description: post.body.slice(0, 120), type: "article", images: [cover ?? "/opengraph-image.png"] },
+    openGraph: { title: post.title, description: post.body.replace(/\s+/g, " ").slice(0, 120), type: "article", images: [cover ?? "/opengraph-image.png"] },
     twitter: { card: "summary_large_image", images: [cover ?? "/twitter-image.png"] },
   };
 }

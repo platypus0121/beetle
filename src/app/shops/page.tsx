@@ -19,10 +19,12 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
       description: "全台灣甲蟲專賣店名錄：鍬形蟲、兜蟲、獨角仙實體店的地址、電話、營業時間與公休日，依縣市查詢。",
       alternates: { canonical: "/shops" },
     };
+  // 「臺南」也常被寫成「台南」，標題兩種寫法都放；沒有「臺」字的縣市就不重複
   const alt = city.replace("臺", "台");
+  const both = alt === city ? city : `${city}・${alt}`;
   return {
-    title: `${city}甲蟲店（${alt}鍬形蟲・兜蟲・獨角仙專賣店）`,
-    description: `${city}（${alt}）的甲蟲專賣店：地址、電話、營業時間與公休日，出發前先查。`,
+    title: `${city}甲蟲店（${alt === city ? "" : alt}鍬形蟲・兜蟲・獨角仙專賣店）`,
+    description: `${both}的甲蟲專賣店：地址、電話、營業時間與公休日，出發前先查。`,
     alternates: { canonical: `/shops?city=${encodeURIComponent(city)}` },
   };
 }
