@@ -32,7 +32,7 @@ a {
 
 @layer components {
   .btn {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-line bg-white px-4 text-sm font-medium text-ink transition select-none hover:bg-wash disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-line bg-white px-4 text-sm font-medium whitespace-nowrap text-ink transition select-none hover:bg-wash disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
     @apply border-accent bg-accent text-white hover:border-accent-dark hover:bg-accent-dark;

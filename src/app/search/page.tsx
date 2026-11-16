@@ -83,7 +83,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <div className="mx-auto max-w-3xl">
       <PageHeader title="搜尋" />
       <form className="mb-5 flex gap-2">
-        <input name="q" defaultValue={q} placeholder="品種、文章、商品、會員" className="input" autoFocus={!q} aria-label="搜尋" />
+        <input name="q" type="search" defaultValue={q} placeholder="品種、文章、商品、會員" enterKeyHint="search" className="input min-w-0 flex-1" autoFocus={!q} aria-label="搜尋" />
         <button className="btn btn-primary">搜尋</button>
       </form>
       {results}

@@ -38,7 +38,7 @@ export default async function SpeciesPage({ searchParams }: { searchParams: Prom
       />
       <form className="mb-3 flex gap-2">
         {g && <input type="hidden" name="g" value={g} />}
-        <input name="q" defaultValue={q} placeholder="搜尋俗名、學名、日文名" className="input" aria-label="搜尋品種" />
+        <input name="q" type="search" defaultValue={q} placeholder="搜尋俗名、學名、日文名" enterKeyHint="search" className="input min-w-0 flex-1" aria-label="搜尋品種" />
         <button className="btn">搜尋</button>
       </form>
       <div className="mb-4 flex gap-2">

@@ -48,7 +48,7 @@ export default async function AdminSpeciesPage({ searchParams }: { searchParams:
       <section>
         <h2 className="mb-2 font-semibold">修改品種</h2>
         <form className="mb-3 flex gap-2">
-          <input name="q" defaultValue={q} placeholder="搜尋要修改的品種" aria-label="搜尋品種" className="input" />
+          <input name="q" type="search" defaultValue={q} placeholder="搜尋要修改的品種" aria-label="搜尋品種" className="input min-w-0 flex-1" />
           <button className="btn">搜尋</button>
         </form>
         <div className="space-y-4">

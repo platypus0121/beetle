@@ -19,7 +19,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     <div>
       <h1 className="page-title mb-3">會員管理</h1>
       <form className="mb-4 flex gap-2">
-        <input name="q" defaultValue={q} placeholder="搜尋暱稱" aria-label="搜尋暱稱" className="input" />
+        <input name="q" type="search" defaultValue={q} placeholder="搜尋暱稱" aria-label="搜尋暱稱" className="input min-w-0 flex-1" />
         <button className="btn">搜尋</button>
       </form>
       <ul className="space-y-3">
